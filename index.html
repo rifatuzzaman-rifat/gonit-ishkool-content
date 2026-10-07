@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The Shape of Math: Completing the Square</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Work+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#18181b;--panel:#27272a;--deep:#18181b;--line:#3f3f46;--text:#f4f4f5;--mute:#a1a1aa;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#f4f4f5;--panel:#fff;--deep:#f4f4f5;--line:#d4d4d8;--text:#18181b;--mute:#52525b}}
+:root[data-theme="dark"]{--bg:#18181b;--panel:#27272a;--deep:#18181b;--line:#3f3f46;--text:#f4f4f5;--mute:#a1a1aa}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{min-height:100%}
+body{background:var(--bg);color:var(--text);font-family:'Work Sans',system-ui,sans-serif;padding:clamp(8px,3vw,24px);padding-left:max(clamp(8px,3vw,24px),env(safe-area-inset-left,0px));padding-right:max(clamp(8px,3vw,24px),env(safe-area-inset-right,0px))}
+.container{max-width:1040px;margin:0 auto;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:clamp(12px,3vw,22px)}
+h1{font-size:clamp(22px,6vw,28px);text-align:center}
+.sub{color:var(--mute);text-align:center;margin:6px 0 16px;font-size:clamp(14px,3.6vw,16px)}
+.layout{display:flex;flex-wrap:wrap;gap:20px}
+.stage{flex:2 1 420px;min-width:0;position:sticky;top:max(8px,env(safe-area-inset-top,0px));align-self:flex-start;z-index:2;background:var(--panel);padding-bottom:8px}
+@media(max-height:560px){.stage{position:static}}
+@media(max-width:859px){body.ch svg{max-height:30vh}}
+.controls{flex:1 1 290px;display:flex;flex-direction:column;gap:16px;background:var(--deep);border:1px solid var(--line);border-radius:12px;padding:18px}
+@media(min-width:860px){.controls{order:-1;max-width:320px}}
+.canvas{background:var(--deep);background-image:radial-gradient(var(--line) 1px,transparent 1px);background-size:20px 20px;border:1px solid var(--line);border-radius:12px}
+svg{display:block;width:100%;height:auto;max-height:42vh;touch-action:none}
+@media(min-width:860px){svg{max-height:none}}
+.shape{stroke:#18181b;stroke-width:2}
+.label{font:700 15px 'Space Mono',monospace;fill:#18181b;text-anchor:middle;dominant-baseline:central;pointer-events:none}
+.dim{fill:var(--mute);transition:opacity .3s}
+.ghost .shape{fill:rgba(249,115,22,.1);stroke:#f97316;stroke-dasharray:6 5}
+.ghost .label{fill:#f97316}
+.gridov{opacity:0;pointer-events:none;transition:opacity .3s}
+svg.grid .gridov{opacity:1}
+.piece{cursor:help}
+.dot{fill:#fff;stroke:#18181b;stroke-width:2;pointer-events:none}
+.hit{fill:transparent;cursor:grab;touch-action:none}
+.hit:active{cursor:grabbing}
+.ring{fill:none;stroke:#fff;stroke-width:2;pointer-events:none;animation:ring 1.8s ease-out infinite}
+@keyframes ring{from{r:7;opacity:.8}to{r:20;opacity:0}}
+svg.nohandle .hg{display:none}
+.pop{transform-box:fill-box;transform-origin:center;animation:pop .55s ease-out}
+@keyframes pop{0%{transform:scale(.4)}60%{transform:scale(1.15)}100%{transform:scale(1)}}
+.fx{transform-box:fill-box;animation:fly .9s ease-out forwards}
+@keyframes fly{to{transform:translate(var(--dx),var(--dy)) scale(.2);opacity:0}}
+@media(prefers-reduced-motion:reduce){.pop,.fx,.ring{animation:none}}
+.cap{margin-top:10px;font-size:clamp(14px,3.8vw,17px);line-height:1.45;min-height:4.4em}
+.info{margin-top:6px;font:400 13px 'Space Mono',monospace;color:var(--mute);min-height:2.6em}
+.row{display:flex;flex-direction:column;gap:8px}
+.hd{display:flex;justify-content:space-between;font:700 14px 'Space Mono',monospace;color:#10b981}
+.hd b{color:var(--text)}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;background:transparent;height:28px}
+input[type=range]::-webkit-slider-runnable-track{height:4px;background:var(--line);border-radius:2px}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;height:22px;width:22px;border-radius:50%;background:#10b981;margin-top:-9px}
+input[type=range]::-moz-range-track{height:4px;background:var(--line)}
+input[type=range]::-moz-range-thumb{height:22px;width:22px;border:0;border-radius:50%;background:#10b981}
+input[type=range]:disabled{opacity:.35}
+button{font:600 14px 'Work Sans',sans-serif;color:var(--text);background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px 14px;cursor:pointer;min-height:42px}
+button:hover{border-color:#60a5fa}
+button:disabled{opacity:.4;cursor:not-allowed}
+button:focus-visible,input:focus-visible{outline:2px solid #60a5fa;outline-offset:2px}
+button.primary{background:#3b82f6;border-color:#3b82f6;color:#fff}
+.seg{display:flex;gap:6px}
+.seg button{flex:1;font-family:'Space Mono',monospace;font-size:13px;padding:10px 6px}
+.seg button.on{background:#3b82f6;border-color:#3b82f6;color:#fff}
+.stepper{display:flex;gap:8px;align-items:center}
+.dots{display:flex;gap:6px;flex:1;justify-content:center}
+.dots button{width:34px;min-height:34px;padding:0;border-radius:50%;color:var(--mute);touch-action:manipulation}
+.dots button.on{background:#60a5fa;border-color:#60a5fa;color:#18181b}
+.tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.tools label{display:flex;gap:6px;align-items:center;font-size:14px;color:var(--mute);cursor:pointer}
+.chal{display:none;flex-direction:column;gap:8px;border:1px solid #f97316;border-radius:10px;padding:12px}
+body.ch .chal{display:flex}
+.chal .q{display:flex;gap:8px}
+.chal input{flex:1;min-width:0;font:700 18px 'Space Mono',monospace;color:var(--text);background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:8px 10px}
+.msg{font-size:14px;min-height:20px}
+.eq{background:var(--panel);border:1px dashed var(--line);border-radius:8px;padding:14px;text-align:center;font:400 17px 'Space Mono',monospace;line-height:1.7;overflow-wrap:anywhere}
+.g{color:#10b981}.r{color:#ef4444}.o{color:#f97316}.y{color:#fbbf24}
+svg.merge .strip .shape{stroke:none!important}
+.bt{font:700 13px 'Space Mono',monospace;fill:var(--text);dominant-baseline:central}
+#bars{transition:opacity .4s}
+.label{transition:opacity .2s}
+@media(pointer:coarse){.dots button{width:40px;min-height:40px}}
+.tip{font-size:13px;color:var(--mute)}
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>The Shape of Math</h1>
+  <p class="sub">Build a perfect square from x² ± bx, then deal with the constant c. Drag, play, test yourself.</p>
+  <div class="layout">
+    <div class="stage">
+      <div class="canvas">
+        <svg id="viz" viewBox="0 4 600 490" aria-label="Completing the square diagram">
+          <defs><pattern id="grid" x="50" y="50" width="24" height="24" patternUnits="userSpaceOnUse"><path d="M24 0H0V24" fill="none" stroke="rgba(0,0,0,.35)" stroke-width="1"/></pattern></defs>
+          <g id="layer"></g>
+          <g id="bars" style="opacity:0;pointer-events:none"><rect id="bc" rx="4" height="18"/><text id="tc" class="bt"/><rect id="br" rx="4" height="18"/><text id="tr" class="bt"/></g>
+          <g id="tl"></g>
+          <text id="dt" class="label dim" y="22"></text>
+          <text id="dl" class="label dim"></text>
+          <g id="fxl"></g>
+          <g class="hg"><circle id="rX" class="ring"/><circle id="dX" class="dot" r="7"/><circle id="hX" class="hit" r="20"><title>Drag to resize x</title></circle>
+          <circle id="rB" class="ring"/><circle id="dB" class="dot" r="7"/><circle id="hB" class="hit" r="20"><title>Drag to change b. Drag left to subtract!</title></circle></g>
+        </svg>
+      </div>
+      <p class="cap" id="cap" aria-live="polite"></p>
+      <p class="info" id="info"></p>
+    </div>
+
+    <div class="controls">
+      <div class="seg" role="group" aria-label="Add or subtract">
+        <button id="sp">x² + bx</button><button id="sm">x² − bx</button>
+      </div>
+      <div class="row">
+        <div class="hd"><span>Size of main square (x)</span><b id="vx"></b></div>
+        <input type="range" id="sx" min="4" max="10" step="1" value="6" aria-label="x">
+      </div>
+      <div class="row">
+        <div class="hd"><span>Strip size (b)</span><b id="vb"></b></div>
+        <input type="range" id="sb" min="2" max="12" step="2" value="8" aria-label="b">
+      </div>
+      <div class="row">
+        <div class="hd"><span>Constant (c)</span><b id="vc"></b></div>
+        <input type="range" id="sc" min="-12" max="12" step="1" value="5" aria-label="c">
+      </div>
+      <div class="row">
+        <div class="hd" style="color:#60a5fa"><span id="vs"></span></div>
+        <div class="stepper">
+          <button id="back" aria-label="Previous step">◀</button>
+          <div class="dots" id="dots"></div>
+          <button id="next" aria-label="Next step">▶</button>
+        </div>
+        <div class="tools">
+          <button id="play" class="primary">Play</button>
+          <button id="rnd">Shuffle</button>
+          <label><input type="checkbox" id="gridT"> Unit tiles</label>
+          <button id="chalB">Challenge</button>
+        </div>
+      </div>
+      <div class="chal">
+        <div class="msg" id="msg"></div>
+        <div class="q"><input id="ans" type="number" inputmode="numeric" placeholder="?" aria-label="Missing number"><button id="chk" class="primary">Check</button></div>
+        <div class="msg" id="streak"></div>
+      </div>
+      <div class="eq"><div id="eq"></div><div id="num" class="tip"></div></div>
+      <p class="tip">Drag the white dots on the shape (pull the strip dot left past the square to subtract), hover or tap a piece to see its area, or use ← → to step.</p>
+    </div>
+  </div>
+</div>
+<script>
+const U=24,OX=50,OY=50,GAP=12,NS='http://www.w3.org/2000/svg',$=id=>document.getElementById(id);
+const S={x:6,b:8,c:5,step:0,ch:false,solved:false,streak:0,best:0};
+const namesP=["The equation","The split","The move","The missing piece","The constant"],namesN=["The equation","The split","The move","The give-back","The constant"];
+const sv=v=>v<0?"−"+(-v):""+v;
+const capsP=["A square of side x, plus a strip of area bx. Can we turn this into one bigger square?",
+"Slice the strip down the middle: two equal strips, each b/2 wide.",
+"Slide one strip under the square. A corner is missing!",
+"Fill the corner with (b/2)². Now x² + bx + (b/2)² is a perfect square of side x + b/2. To stay fair we also subtract (b/2)²."];
+const capsN=["Start with a square of side x, then take away a strip of area bx. What's left is a rectangle.",
+"Cut the strip down the middle into two strips, each b/2 wide.",
+"Lay one strip along the right edge and the other along the bottom. They overlap in a corner!",
+"The corner was taken away twice, so give it back: add (b/2)². Now it is a perfect square of side x − b/2. To stay fair we subtract (b/2)² again."];
+const clamp=(v,a,z)=>Math.max(a,Math.min(z,v));
+const hmaxN=()=>Math.floor((S.x-2)/2);
+const fit=()=>{if(S.b<0&&-S.b/2>hmaxN())S.b=-2*hmaxN()};
+const el=(n,a)=>{const e=document.createElementNS(NS,n);for(const k in a)e.setAttribute(k,a[k]);return e};
+const svg=$('viz'),layer=$('layer'),P={};
+const frm=el('rect',{fill:'none',rx:4,'stroke-width':1.5,'stroke-dasharray':'6 5','pointer-events':'none'});frm.style.stroke='var(--mute)';layer.append(frm);
+function mk(id,color,cls){
+  const g=el('g',{class:'piece '+(cls||'')+(id[0]=='r'&&id.length==2?' strip':'')}),r=el('rect',{fill:color,rx:4,class:'shape'}),tx=el('text',{class:'label'});
+  const gr=color==='none'?null:el('rect',{fill:'url(#grid)',rx:4,class:'gridov'});
+  g.append(r);if(gr)g.append(gr);$('tl').append(tx);layer.append(g);
+  P[id]={g,r,gr,tx,cur:null};
+  g.addEventListener('pointerenter',()=>info(id));g.addEventListener('pointerdown',()=>info(id));
+  g.addEventListener('pointerleave',()=>info(null));
+}
+mk('main','#3b82f6');mk('r1','#10b981');mk('r2','#10b981');mk('ghost','none','ghost');mk('corner','#f97316');
+const blk=el('rect',{fill:'none',rx:4,'stroke-width':2,'pointer-events':'none'});layer.append(blk);
+
+function targets(){
+  const {x,b,step}=S,m=Math.abs(b),h=m/2,px=x*U,ph=h*U;
+  if(b<0){
+    const rem=(x-h)*U,mw=(x-m)*U,s=step,o=s>=3?.25:1;
+    return {
+      main:s<2?{x:OX,y:OY,w:mw,h:px,o:1}:{x:OX,y:OY,w:rem,h:rem,o:1},
+      r1:{x:OX+(s<2?mw:rem),y:OY,w:ph,h:px,o},
+      r2:s==0?{x:OX+mw+ph,y:OY,w:ph,h:px,o}:s==1?{x:OX+mw+ph+GAP,y:OY,w:ph,h:px,o}:{x:OX,y:OY+rem,w:px,h:ph,o},
+      ghost:{x:OX+rem,y:OY+rem,w:ph,h:ph,o:0},corner:{x:OX+rem,y:OY+rem,w:ph,h:ph,o:s>=2?.9:0}
+    };
+  }
+  const cr={x:OX+px,y:OY+px,w:ph,h:ph};
+  return {
+    main:{x:OX,y:OY,w:px,h:px,o:1},
+    r1:{x:OX+px,y:OY,w:ph,h:px,o:1},
+    r2:step==0?{x:OX+px+ph,y:OY,w:ph,h:px,o:1}:step==1?{x:OX+px+ph+GAP,y:OY,w:ph,h:px,o:1}:{x:OX,y:OY+px,w:px,h:ph,o:1},
+    ghost:{...cr,o:step==2?1:0},corner:{...cr,o:step>=3?1:0}
+  };
+}
+let base=15;
+function draw(k){
+  const p=P[k],c=p.cur,s=S.step;
+  for(const r of [p.r,p.gr]) if(r){r.setAttribute('x',c.x);r.setAttribute('y',c.y);r.setAttribute('width',Math.max(c.w,0));r.setAttribute('height',Math.max(c.h,0))}
+  p.g.style.opacity=c.o;p.tx.style.opacity=c.o*((k=='r2'&&s==0)?0:1);p.g.style.pointerEvents=c.o>.5?'auto':'none';
+  const n=Math.max(p.tx.textContent.length,1)*.62,
+    rot=(k=='r1'&&s>0)||(k=='r2'&&s==1),comb=k=='r1'&&s==0,
+    L=comb?c.w*2-8:rot?c.h-8:c.w-8,T=comb?c.h-8:rot?c.w-8:c.h-8,
+    f=clamp(Math.min(base,L/n,T/1.1),6,base),sq=(k=='corner'||k=='ghost')?3:0,
+    x=(comb?c.x+c.w:c.x+c.w/2)+sq,y=c.y+c.h/2+sq;
+  p.tx.style.fontSize=f+'px';p.tx.setAttribute('x',x);p.tx.setAttribute('y',y);
+  p.tx.setAttribute('transform',rot?`rotate(-90 ${x} ${y})`:'');
+}
+function place(){
+  const {x,b,step:s}=S,neg=b<0,m=Math.abs(b),h=m/2,px=x*U,mn=P.main.cur,r1=P.r1.cur,r2=P.r2.cur,pos=(ids,X,Y)=>ids.forEach(i=>{$(i).setAttribute('cx',X);$(i).setAttribute('cy',Y)});
+  pos(['hX','dX','rX'],OX+px,OY+px);
+  pos(['hB','dB','rB'],neg?OX+(x-m)*U:r1.x+r1.w,OY);
+  let tx,ly;
+  if(neg){const w=s>=3?(x-h)*U:px;tx=OX+w/2;ly=OY+w/2}
+  else{const right=s==0?r2.x+r2.w:r1.x+r1.w;tx=(mn.x+right)/2;ly=s>=3?(mn.y+P.corner.cur.y+P.corner.cur.h)/2:mn.y+mn.h/2}
+  frm.setAttribute('x',OX);frm.setAttribute('y',OY);frm.setAttribute('width',px);frm.setAttribute('height',px);frm.style.opacity=neg?1:0;
+  blk.setAttribute('x',r1.x);blk.setAttribute('y',r1.y);blk.setAttribute('width',Math.max(r2.x+r2.w-r1.x,0));blk.setAttribute('height',r1.h);blk.style.opacity=s==0?1:0;blk.style.stroke=neg?'#ef4444':'#18181b';blk.style.strokeDasharray=neg?'6 4':'';
+  $('dt').setAttribute('x',tx);$('dl').setAttribute('x',OX-18);$('dl').setAttribute('y',ly);$('dl').setAttribute('transform',`rotate(-90 ${OX-18} ${ly})`);
+  $('dt').style.fontSize=$('dl').style.fontSize=Math.min(base,17)+'px';
+}
+let raf=0;
+function tick(){
+  let moving=false;const T=targets();
+  for(const k in P){
+    const c=P[k].cur;
+    for(const a of ['x','y','w','h','o']){const d=T[k][a]-c[a];if(Math.abs(d)>.05){c[a]+=d*.18;moving=true}else c[a]=T[k][a]}
+    draw(k);
+  }
+  place();raf=moving?requestAnimationFrame(tick):0;
+}
+const go=()=>{if(!raf)raf=requestAnimationFrame(tick)};
+
+function info(id){
+  const {x,b,step}=S,m=Math.abs(b),h=m/2,neg=b<0,r=neg?x-h:x+h;
+  const t=neg?{
+    main:step<2?`x(x − b) = ${x}×${x-m} = ${x*(x-m)} tiles. This is x² − bx.`:`(x − b/2)² = ${r}×${r} = ${r*r} tiles`,
+    r1:`(b/2)·x = ${h}×${x} = ${h*x} tiles, taken away`,r2:`(b/2)·x = ${h}×${x} = ${h*x} tiles, taken away`,
+    ghost:'',corner:`(b/2)² = ${h}×${h} = ${h*h} tiles. Taken away twice, so we give it back.`}:{
+    main:`x² = ${x}×${x} = ${x*x} tiles`,
+    r1:`(b/2)·x = ${h}×${x} = ${h*x} tiles`,r2:`(b/2)·x = ${h}×${x} = ${h*x} tiles`,
+    ghost:`The gap is the same width and height as a strip: b/2.`,
+    corner:`(b/2)² = ${h}×${h} = ${h*h} tiles. This is the piece we added.`};
+  $('info').textContent=id?t[id]:'Hover or tap a piece to see its area.';
+}
+function labels(){
+  const {x,b,step}=S,m=Math.abs(b),h=m/2,neg=b<0;
+  if(neg){
+    P.main.tx.textContent=step<2?`x(x−${m})`:`(x−${h})²`;
+    P.r1.tx.textContent=step==0?`−${m}x`:`${h}x`;
+    $('dt').textContent=$('dl').textContent=step>=3?`x − ${h}`:'x';
+    $('dt').style.opacity=$('dl').style.opacity=1;
+  }else{
+    P.main.tx.textContent='x²';P.r1.tx.textContent=step==0?`${b}x`:`${h}x`;
+    $('dt').textContent=step==0?`x + ${b}`:`x + ${h}`;
+    $('dl').textContent=step==0?'x':`x + ${h}`;
+    const v=(step==0||step>=3)?1:0;$('dt').style.opacity=v;$('dl').style.opacity=v;
+  }
+  P.r2.tx.textContent=`${h}x`;
+  P.ghost.tx.textContent='?';P.corner.tx.textContent=`${h}²`;
+  for(const k of ['r1','r2']){const q=P[k];q.r.setAttribute('fill',neg?'rgba(239,68,68,.32)':'#10b981');q.r.style.stroke=neg?'#ef4444':'';q.r.style.strokeDasharray=neg?'6 4':'';q.tx.style.fill=neg?'var(--text)':''}
+  P.corner.r.setAttribute('fill',neg?'rgba(249,115,22,.85)':'#f97316');
+}
+function eq(){
+  const {x,b,c,step}=S,neg=b<0,m=Math.abs(b),h=m/2,c1=neg?'r':'g',sg=neg?'−':'+',w=neg?x-h:x+h,r=c-h*h;
+  const lock=S.ch&&!S.solved,sp=t=>`<span class="${c1}">${t}</span>`,cs=c==0?'':` ${c<0?'−':'+'} <span class="y">${Math.abs(c)}</span>`;
+  const e=[
+    `x² ${sg} ${sp(m+'x')}${lock?' + <span class="o">?</span>':''}${cs}`,
+    `x² ${sg} ${sp(h+'x')} ${sg} ${sp(h+'x')}${cs}`,
+    `x² ${sg} 2(${sp(h+'x')})${cs}`,
+    `(x² ${sg} ${m}x <span class="o">+ ${h}²</span>) <span class="o">− ${h}²</span>${cs}`,
+    `(x ${sg} ${h})² ${r<0?'−':'+'} ${Math.abs(r)}`][step];
+  $('eq').innerHTML=e;
+  $('num').textContent=step==3?`${x*x} ${sg} ${m*x} + ${h*h} = ${w*w} = ${w}²`:step==4?`${c} − ${h*h} = ${r}`:'';
+}
+function bars(){
+  const {x,b,c,step}=S,h=Math.abs(b)/2,r=c-h*h,bottom=OY+(x+(b<0?0:h))*U,y1=bottom+14,y2=y1+28,s=Math.min(24,300/Math.max(Math.abs(c),Math.abs(r),1));
+  const one=(rc,tx,v,y,t)=>{const w=Math.abs(v)*s;rc.setAttribute('x',OX);rc.setAttribute('y',y);rc.setAttribute('width',w);
+    rc.style.fill=v<0?'rgba(239,68,68,.3)':'rgba(16,185,129,.5)';rc.style.stroke=v<0?'#ef4444':'#10b981';rc.style.strokeWidth=2;rc.style.strokeDasharray=v<0?'6 4':'';rc.style.opacity=v==0?0:1;
+    tx.setAttribute('x',OX+w+8);tx.setAttribute('y',y+9);tx.textContent=t};
+  one($('bc'),$('tc'),c,y1,`c = ${sv(c)}`);one($('br'),$('tr'),r,y2,r==0?`c − ${h*h} = 0 (perfect!)`:`c − ${h*h} = ${sv(r)}`);
+  $('bars').style.opacity=step==4?1:0;
+}
+function capText(){
+  const {b,c,step}=S,m=Math.abs(b),h=m/2,neg=b<0,r=c-h*h,sg=neg?'−':'+';
+  if(step<4)return (neg?capsN:capsP)[step];
+  return `So x² ${sg} ${m}x ${c<0?'−':'+'} ${Math.abs(c)} = (x ${sg} ${h})² ${r<0?'−':'+'} ${Math.abs(r)}. Its lowest value is ${r}, reached when x = ${neg?h:-h}.`;
+}
+function sync(){
+  fit();
+  const {x,b,step}=S,neg=b<0,m=Math.abs(b);
+  $('sx').value=x;$('sb').max=neg?2*hmaxN():12;$('sb').value=m;$('vx').textContent=x;$('vb').textContent=(neg?'−':'+')+m;
+  $('sp').classList.toggle('on',!neg);$('sm').classList.toggle('on',neg);
+  $('vs').textContent=`Step ${step}: ${(neg?namesN:namesP)[step]}`;
+  [...$('dots').children].forEach((d,i)=>{d.classList.toggle('on',i<=step);d.setAttribute('aria-current',i==step);d.title=(neg?namesN:namesP)[i]});
+  $('cap').textContent=capText();svg.classList.toggle('merge',step==0);$('sc').value=S.c;$('vc').textContent=(S.c<0?'−':'+')+Math.abs(S.c);bars();
+  labels();eq();info(null);
+}
+const set=(k,v)=>{if(S[k]!==v){S[k]=v;sync();go()}};
+
+function burst(){
+  const T=targets().corner,cx=T.x+T.w/2,cy=T.y+T.h/2,cols=['#f97316','#3b82f6','#10b981','#fbbf24'];
+  for(let i=0;i<18;i++){
+    const a=i/18*6.283,d=50+Math.random()*60;
+    const c=el('circle',{cx,cy,r:4+Math.random()*3,fill:cols[i%4],class:'fx'});
+    c.style.setProperty('--dx',Math.cos(a)*d+'px');c.style.setProperty('--dy',Math.sin(a)*d+'px');
+    $('fxl').append(c);setTimeout(()=>c.remove(),1000);
+  }
+}
+function setStep(n){
+  n=clamp(n,0,4);
+  if(n>=3&&S.ch&&!S.solved){$('msg').textContent='Solve the challenge first to reveal the last step.';return}
+  const was=S.step;S.step=n;sync();go();
+  if(n==3&&was!=3){P.corner.g.classList.remove('pop');void P.corner.g.getBoundingClientRect();P.corner.g.classList.add('pop');burst();navigator.vibrate&&navigator.vibrate(15)}
+}
+
+// Drag handles
+const pt=e=>new DOMPoint(e.clientX,e.clientY).matrixTransform(svg.getScreenCTM().inverse());
+function drag(h,fn){
+  h.addEventListener('pointerdown',e=>{h.setPointerCapture(e.pointerId);h.dataset.d=1;e.preventDefault()});
+  h.addEventListener('pointermove',e=>{if(h.dataset.d)fn(pt(e))});
+  const end=()=>{delete h.dataset.d};h.addEventListener('pointerup',end);h.addEventListener('pointercancel',end);
+}
+drag($('hX'),p=>set('x',clamp(Math.round(((p.x-OX)+(p.y-OY))/2/U),4,10)));
+drag($('hB'),p=>{
+  const d=(p.x-OX-S.x*U)/U;
+  if(d>=.5)set('b',2*clamp(Math.round(d),1,6));
+  else if(d<=-1)set('b',-2*clamp(Math.round(-d/2),1,hmaxN()));
+});
+
+// Controls
+$('sx').oninput=e=>set('x',+e.target.value);
+$('sc').oninput=e=>set('c',+e.target.value);
+$('sb').oninput=e=>set('b',(S.b<0?-1:1)*(+e.target.value));
+const flip=neg=>{const m=Math.abs(S.b);if(neg!==(S.b<0)){S.b=neg?-m:m;sync();go()}};
+$('sp').onclick=()=>flip(false);$('sm').onclick=()=>flip(true);
+function shuffle(){
+  S.x=4+Math.floor(Math.random()*7);const neg=Math.random()<.5,hm=neg?hmaxN():6;
+  S.b=(neg?-2:2)*(1+Math.floor(Math.random()*hm));S.c=Math.floor(Math.random()*19)-9;
+}
+$('rnd').onclick=()=>{shuffle();sync();go()};
+for(let i=0;i<5;i++){const d=document.createElement('button');d.textContent=i;d.onclick=()=>{stop();setStep(i)};$('dots').append(d)}
+$('back').onclick=()=>{stop();setStep(S.step-1)};
+$('next').onclick=()=>{stop();setStep(S.step+1)};
+$('gridT').onchange=e=>svg.classList.toggle('grid',e.target.checked);
+let timer=0;
+function stop(){clearInterval(timer);timer=0;$('play').textContent='Play'}
+$('play').onclick=()=>{
+  if(timer){stop();return}
+  if(S.step==4)setStep(0);
+  $('play').textContent='Pause';
+  timer=setInterval(()=>{if(S.step>=4||(S.ch&&!S.solved&&S.step>=2)){stop();return}setStep(S.step+1)},1800);
+};
+addEventListener('keydown',e=>{
+  if(e.target.tagName=='INPUT'&&e.target.type!='range')return;
+  if(e.key=='ArrowRight'){stop();setStep(S.step+1)}
+  if(e.key=='ArrowLeft'){stop();setStep(S.step-1)}
+});
+
+// Challenge mode
+function newProblem(){
+  shuffle();S.solved=false;S.step=0;
+  $('ans').value='';
+  $('msg').textContent=`What number completes x² ${S.b<0?'−':'+'} ${Math.abs(S.b)}x + ?  Use the steps if you need a hint.`;
+  $('chk').textContent='Check';sync();go();if(matchMedia('(pointer:fine)').matches)$('ans').focus();
+}
+function streakTxt(){$('streak').textContent=S.streak?`Streak: ${S.streak}${S.streak>=S.best&&S.streak>2?' 🔥 best!':''}`:(S.best?`Best streak: ${S.best}`:'')}
+$('chalB').onclick=()=>{
+  S.ch=!S.ch;stop();document.body.classList.toggle('ch',S.ch);svg.classList.toggle('nohandle',S.ch);
+  for(const i of ['sx','sb','sp','sm','rnd'])$(i).disabled=S.ch;
+  $('chalB').textContent=S.ch?'Exit challenge':'Challenge';
+  if(S.ch){S.streak=0;streakTxt();newProblem()}else{S.solved=true;sync()}
+};
+function check(){
+  if(S.solved){newProblem();return}
+  const m=Math.abs(S.b),h=m/2,v=parseFloat($('ans').value);
+  if(isNaN(v))return;
+  if(v===h*h){S.solved=true;S.streak++;S.best=Math.max(S.best,S.streak);streakTxt();$('chk').textContent='Next problem';
+    $('msg').textContent=`Yes! (${m}/2)² = ${h*h}. So it's a perfect square: (x ${S.b<0?'−':'+'} ${h})².`;setStep(3)}
+  else{S.streak=0;streakTxt();$('msg').textContent=`Not quite. Halve ${m}, then square the result. The sign doesn't change the answer!`}
+}
+$('chk').onclick=check;
+$('ans').addEventListener('keydown',e=>{if(e.key=='Enter')check()});
+
+// Init
+const T0=targets();for(const k in P)P[k].cur={...T0[k],o:0};
+const fitBase=()=>{const q=svg.getBoundingClientRect();if(!q.width)return;base=clamp(13/Math.min(q.width/600,q.height/490),15,24);go()};
+new ResizeObserver(fitBase).observe(svg);
+fitBase();sync();go();
+</script>
+</body>
+        </html>
