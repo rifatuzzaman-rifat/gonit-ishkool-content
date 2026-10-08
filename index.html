@@ -9,23 +9,29 @@
 :root{--bg:#18181b;--panel:#27272a;--deep:#18181b;--line:#3f3f46;--text:#f4f4f5;--mute:#a1a1aa;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 @media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#f4f4f5;--panel:#fff;--deep:#f4f4f5;--line:#d4d4d8;--text:#18181b;--mute:#52525b}}
 :root[data-theme="dark"]{--bg:#18181b;--panel:#27272a;--deep:#18181b;--line:#3f3f46;--text:#f4f4f5;--mute:#a1a1aa}
+:root[data-theme="light"]{--bg:#f4f4f5;--panel:#fff;--deep:#f4f4f5;--line:#d4d4d8;--text:#18181b;--mute:#52525b}
 *{box-sizing:border-box;margin:0;padding:0}
+[hidden]{display:none!important}
 html,body{min-height:100%}
-body{background:var(--bg);color:var(--text);font-family:'Work Sans',system-ui,sans-serif;padding:clamp(8px,3vw,24px);padding-left:max(clamp(8px,3vw,24px),env(safe-area-inset-left,0px));padding-right:max(clamp(8px,3vw,24px),env(safe-area-inset-right,0px))}
-.container{max-width:1040px;margin:0 auto;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:clamp(12px,3vw,22px)}
-h1{font-size:clamp(22px,6vw,28px);text-align:center}
-.sub{color:var(--mute);text-align:center;margin:6px 0 16px;font-size:clamp(14px,3.6vw,16px)}
-.layout{display:flex;flex-wrap:wrap;gap:20px}
-.stage{flex:2 1 420px;min-width:0;position:sticky;top:max(8px,env(safe-area-inset-top,0px));align-self:flex-start;z-index:2;background:var(--panel);padding-bottom:8px}
-@media(max-height:560px){.stage{position:static}}
-@media(max-width:859px){body.ch svg{max-height:30vh}}
-.controls{flex:1 1 290px;display:flex;flex-direction:column;gap:16px;background:var(--deep);border:1px solid var(--line);border-radius:12px;padding:18px}
-@media(min-width:860px){.controls{order:-1;max-width:320px}}
-.canvas{background:var(--deep);background-image:radial-gradient(var(--line) 1px,transparent 1px);background-size:20px 20px;border:1px solid var(--line);border-radius:12px}
-svg{display:block;width:100%;height:auto;max-height:42vh;touch-action:none}
+body{background:var(--bg);color:var(--text);font-family:'Work Sans',system-ui,sans-serif;padding:clamp(8px,3vw,24px);padding-left:max(clamp(8px,3vw,24px),env(safe-area-inset-left,0px));padding-right:max(clamp(8px,3vw,24px),env(safe-area-inset-right,0px));overflow-x:hidden}
+.container{max-width:1040px;margin:0 auto;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:clamp(10px,3vw,22px)}
+.top{display:flex;align-items:center;gap:8px}
+.top h1{flex:1;min-width:0;font-size:clamp(20px,6vw,28px);text-align:center}
+.ico{flex:none;min-height:36px;padding:4px 10px;font-size:16px}
+.sub{color:var(--mute);text-align:center;margin:6px 0 12px;font-size:clamp(13px,3.6vw,16px)}
+.modes{max-width:420px;margin:0 auto 14px}
+.layout{display:flex;flex-wrap:wrap;gap:16px}
+.layout>*{min-width:0}
+.stage{flex:2 1 420px;position:sticky;top:max(8px,env(safe-area-inset-top,0px));align-self:flex-start;z-index:2;background:var(--panel);padding-bottom:6px}
+@media(max-height:620px){.stage{position:static}}
+.controls{flex:1 1 280px;display:flex;flex-direction:column;gap:14px;background:var(--deep);border:1px solid var(--line);border-radius:12px;padding:clamp(12px,3vw,18px)}
+@media(min-width:860px){.controls{order:-1;max-width:330px}}
+.canvas{background:var(--deep);background-image:radial-gradient(var(--line) 1px,transparent 1px);background-size:20px 20px;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+svg{display:block;width:100%;height:auto;max-height:38vh;touch-action:none}
 @media(min-width:860px){svg{max-height:none}}
+body.ch #viz{max-height:30vh}
 .shape{stroke:#18181b;stroke-width:2}
-.label{font:700 15px 'Space Mono',monospace;fill:#18181b;text-anchor:middle;dominant-baseline:central;pointer-events:none}
+.label{font:700 15px 'Space Mono',monospace;fill:#18181b;text-anchor:middle;dominant-baseline:central;pointer-events:none;transition:opacity .2s}
 .dim{fill:var(--mute);transition:opacity .3s}
 .ghost .shape{fill:rgba(249,115,22,.1);stroke:#f97316;stroke-dasharray:6 5}
 .ghost .label{fill:#f97316}
@@ -35,6 +41,7 @@ svg.grid .gridov{opacity:1}
 .dot{fill:#fff;stroke:#18181b;stroke-width:2;pointer-events:none}
 .hit{fill:transparent;cursor:grab;touch-action:none}
 .hit:active{cursor:grabbing}
+.hit:focus-visible{stroke:#60a5fa;stroke-width:3;outline:none}
 .ring{fill:none;stroke:#fff;stroke-width:2;pointer-events:none;animation:ring 1.8s ease-out infinite}
 @keyframes ring{from{r:7;opacity:.8}to{r:20;opacity:0}}
 svg.nohandle .hg{display:none}
@@ -43,351 +50,477 @@ svg.nohandle .hg{display:none}
 .fx{transform-box:fill-box;animation:fly .9s ease-out forwards}
 @keyframes fly{to{transform:translate(var(--dx),var(--dy)) scale(.2);opacity:0}}
 @media(prefers-reduced-motion:reduce){.pop,.fx,.ring{animation:none}}
-.cap{margin-top:10px;font-size:clamp(14px,3.8vw,17px);line-height:1.45;min-height:4.4em}
-.info{margin-top:6px;font:400 13px 'Space Mono',monospace;color:var(--mute);min-height:2.6em}
-.row{display:flex;flex-direction:column;gap:8px}
-.hd{display:flex;justify-content:space-between;font:700 14px 'Space Mono',monospace;color:#10b981}
-.hd b{color:var(--text)}
+.cap{margin-top:8px;font-size:clamp(14px,3.8vw,16px);line-height:1.4;min-height:3.9em}
+.info{margin-top:4px;font:400 12px 'Space Mono',monospace;color:var(--mute);min-height:2.4em}
+.row{display:flex;flex-direction:column;gap:6px;min-width:0}
+.hd{display:flex;justify-content:space-between;gap:8px;font:700 13px 'Space Mono',monospace;color:#10b981}
+.hd b{color:var(--text);white-space:nowrap}
 input[type=range]{-webkit-appearance:none;appearance:none;width:100%;background:transparent;height:28px}
 input[type=range]::-webkit-slider-runnable-track{height:4px;background:var(--line);border-radius:2px}
 input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;height:22px;width:22px;border-radius:50%;background:#10b981;margin-top:-9px}
 input[type=range]::-moz-range-track{height:4px;background:var(--line)}
 input[type=range]::-moz-range-thumb{height:22px;width:22px;border:0;border-radius:50%;background:#10b981}
 input[type=range]:disabled{opacity:.35}
-button{font:600 14px 'Work Sans',sans-serif;color:var(--text);background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px 14px;cursor:pointer;min-height:42px}
+button{font:600 14px 'Work Sans',sans-serif;color:var(--text);background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:9px 12px;cursor:pointer;min-height:40px}
 button:hover{border-color:#60a5fa}
 button:disabled{opacity:.4;cursor:not-allowed}
-button:focus-visible,input:focus-visible{outline:2px solid #60a5fa;outline-offset:2px}
+button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid #60a5fa;outline-offset:2px}
 button.primary{background:#3b82f6;border-color:#3b82f6;color:#fff}
 .seg{display:flex;gap:6px}
-.seg button{flex:1;font-family:'Space Mono',monospace;font-size:13px;padding:10px 6px}
+.seg button{flex:1;min-width:0;font-size:13px;padding:9px 4px}
 .seg button.on{background:#3b82f6;border-color:#3b82f6;color:#fff}
-.stepper{display:flex;gap:8px;align-items:center}
-.dots{display:flex;gap:6px;flex:1;justify-content:center}
-.dots button{width:34px;min-height:34px;padding:0;border-radius:50%;color:var(--mute);touch-action:manipulation}
+.stepper{display:flex;gap:6px;align-items:center}
+.stepper>button{flex:none;padding:9px 12px}
+.dots{display:flex;gap:4px;flex:1;min-width:0}
+.dots button{flex:1 1 0;min-width:0;max-width:40px;height:36px;min-height:36px;padding:0;border-radius:10px;color:var(--mute);touch-action:manipulation}
 .dots button.on{background:#60a5fa;border-color:#60a5fa;color:#18181b}
 .tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .tools label{display:flex;gap:6px;align-items:center;font-size:14px;color:var(--mute);cursor:pointer}
 .chal{display:none;flex-direction:column;gap:8px;border:1px solid #f97316;border-radius:10px;padding:12px}
 body.ch .chal{display:flex}
 .chal .q{display:flex;gap:8px}
-.chal input{flex:1;min-width:0;font:700 18px 'Space Mono',monospace;color:var(--text);background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:8px 10px}
-.msg{font-size:14px;min-height:20px}
-.eq{background:var(--panel);border:1px dashed var(--line);border-radius:8px;padding:14px;text-align:center;font:400 17px 'Space Mono',monospace;line-height:1.7;overflow-wrap:anywhere}
+.chal input,.tin{min-width:0;font:700 16px 'Space Mono',monospace;color:var(--text);background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:8px 10px}
+.chal input{flex:1}.tin{width:100%}
+.msg{font-size:14px;min-height:18px;overflow-wrap:anywhere}
+.eq{background:var(--panel);border:1px dashed var(--line);border-radius:8px;padding:12px;text-align:center;font:400 16px 'Space Mono',monospace;line-height:1.7;overflow-wrap:anywhere}
 .g{color:#10b981}.r{color:#ef4444}.o{color:#f97316}.y{color:#fbbf24}
 svg.merge .strip .shape{stroke:none!important}
 .bt{font:700 13px 'Space Mono',monospace;fill:var(--text);dominant-baseline:central}
 #bars{transition:opacity .4s}
-.label{transition:opacity .2s}
-@media(pointer:coarse){.dots button{width:40px;min-height:40px}}
 .tip{font-size:13px;color:var(--mute)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.cv{height:clamp(240px,46vh,460px);position:relative}
+.cv canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none;cursor:grab}
+.lg{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;font:700 12px 'Space Mono',monospace}
+.lg span{padding:3px 8px;border-radius:999px;color:#18181b;transition:opacity .3s}
+#xp{margin-top:14px;display:flex;flex-direction:column;gap:8px}
+#xt{width:100%;min-height:120px;font:12px 'Space Mono',monospace;color:var(--text);background:var(--deep);border:1px solid var(--line);border-radius:8px;padding:10px;resize:vertical}
 </style>
 </head>
 <body>
 <div class="container">
-  <h1>The Shape of Math</h1>
-  <p class="sub">Build a perfect square from x² ± bx, then deal with the constant c. Drag, play, test yourself.</p>
-  <div class="layout">
+  <div class="top"><h1>The Shape of Math</h1><button id="theme" class="ico" aria-label="Switch light or dark theme" title="Light / dark">◐</button></div>
+  <p class="sub" id="sub">Build perfect squares from ax² ± bx + c. Drag, play, test yourself.</p>
+  <div class="seg modes" role="group" aria-label="Mode"><button id="m2" class="on">Squares · 2D</button><button id="m3">Cubes · 3D</button></div>
+
+  <!-- ============ 2D ============ -->
+  <div class="layout" id="v2">
     <div class="stage">
       <div class="canvas">
         <svg id="viz" viewBox="0 4 600 490" aria-label="Completing the square diagram">
-          <defs><pattern id="grid" x="50" y="50" width="24" height="24" patternUnits="userSpaceOnUse"><path d="M24 0H0V24" fill="none" stroke="rgba(0,0,0,.35)" stroke-width="1"/></pattern></defs>
+          <defs><pattern id="grid" x="50" y="44" width="24" height="24" patternUnits="userSpaceOnUse"><path id="gpath" d="M24 0H0V24" fill="none" stroke="rgba(0,0,0,.35)" stroke-width="1"/></pattern></defs>
           <g id="layer"></g>
           <g id="bars" style="opacity:0;pointer-events:none"><rect id="bc" rx="4" height="18"/><text id="tc" class="bt"/><rect id="br" rx="4" height="18"/><text id="tr" class="bt"/></g>
           <g id="tl"></g>
           <text id="dt" class="label dim" y="22"></text>
           <text id="dl" class="label dim"></text>
           <g id="fxl"></g>
-          <g class="hg"><circle id="rX" class="ring"/><circle id="dX" class="dot" r="7"/><circle id="hX" class="hit" r="20"><title>Drag to resize x</title></circle>
-          <circle id="rB" class="ring"/><circle id="dB" class="dot" r="7"/><circle id="hB" class="hit" r="20"><title>Drag to change b. Drag left to subtract!</title></circle></g>
+          <g class="hg"><circle id="rX" class="ring"/><circle id="dX" class="dot" r="7"/><circle id="hX" class="hit" r="20" tabindex="0" role="slider" aria-label="Size of x. Use arrow keys."><title>Drag to resize x</title></circle>
+          <circle id="rB" class="ring"/><circle id="dB" class="dot" r="7"/><circle id="hB" class="hit" r="20" tabindex="0" role="slider" aria-label="Strip size b. Arrow keys change it; past zero flips the sign."><title>Drag to change b. Drag left to subtract!</title></circle></g>
         </svg>
       </div>
       <p class="cap" id="cap" aria-live="polite"></p>
       <p class="info" id="info"></p>
     </div>
-
     <div class="controls">
-      <div class="seg" role="group" aria-label="Add or subtract">
-        <button id="sp">x² + bx</button><button id="sm">x² − bx</button>
-      </div>
-      <div class="row">
-        <div class="hd"><span>Size of main square (x)</span><b id="vx"></b></div>
-        <input type="range" id="sx" min="4" max="10" step="1" value="6" aria-label="x">
-      </div>
-      <div class="row">
-        <div class="hd"><span>Strip size (b)</span><b id="vb"></b></div>
-        <input type="range" id="sb" min="2" max="12" step="2" value="8" aria-label="b">
-      </div>
-      <div class="row">
-        <div class="hd"><span>Constant (c)</span><b id="vc"></b></div>
-        <input type="range" id="sc" min="-12" max="12" step="1" value="5" aria-label="c">
-      </div>
+      <div class="row"><input id="eqin" class="tin" type="text" autocomplete="off" spellcheck="false" aria-label="Type an equation, like 2x^2 + 6x - 4" placeholder="Type: 2x^2 + 6x - 4"><div class="msg" id="eqmsg"></div></div>
+      <div class="seg" role="group" aria-label="Add or subtract"><button id="sp">ax² + bx</button><button id="sm">ax² − bx</button></div>
+      <div class="row"><div class="hd"><span>Size of square (x)</span><b id="vx"></b></div><input type="range" id="sx" min="4" max="10" step="1" value="6" aria-label="x"></div>
+      <div class="row"><div class="hd"><span>Leading coefficient (a)</span><b id="va"></b></div><input type="range" id="sa" min="1" max="3" step="1" value="1" aria-label="a"></div>
+      <div class="row"><div class="hd"><span>Strip size (b)</span><b id="vb"></b></div><input type="range" id="sb" min="1" max="12" step="1" value="8" aria-label="b"></div>
+      <div class="row"><div class="hd"><span>Constant (c)</span><b id="vc"></b></div><input type="range" id="sc" min="-12" max="12" step="1" value="5" aria-label="c"></div>
       <div class="row">
         <div class="hd" style="color:#60a5fa"><span id="vs"></span></div>
-        <div class="stepper">
-          <button id="back" aria-label="Previous step">◀</button>
-          <div class="dots" id="dots"></div>
-          <button id="next" aria-label="Next step">▶</button>
-        </div>
+        <div class="stepper"><button id="back" aria-label="Previous step">◀</button><div class="dots" id="dots"></div><button id="next" aria-label="Next step">▶</button></div>
         <div class="tools">
-          <button id="play" class="primary">Play</button>
-          <button id="rnd">Shuffle</button>
+          <button id="play" class="primary">Play</button><button id="rnd">Shuffle</button><button id="chalB">Challenge</button>
           <label><input type="checkbox" id="gridT"> Unit tiles</label>
-          <button id="chalB">Challenge</button>
         </div>
       </div>
       <div class="chal">
         <div class="msg" id="msg"></div>
-        <div class="q"><input id="ans" type="number" inputmode="numeric" placeholder="?" aria-label="Missing number"><button id="chk" class="primary">Check</button></div>
+        <div class="q"><input id="ans" type="number" step="any" inputmode="decimal" placeholder="?" aria-label="Missing number"><button id="chk" class="primary">Check</button></div>
         <div class="msg" id="streak"></div>
       </div>
       <div class="eq"><div id="eq"></div><div id="num" class="tip"></div></div>
-      <p class="tip">Drag the white dots on the shape (pull the strip dot left past the square to subtract), hover or tap a piece to see its area, or use ← → to step.</p>
+      <div class="canvas"><svg id="gr" viewBox="0 0 300 150" aria-label="Graph of the parabola and its vertex"></svg></div>
+      <p id="sr" class="sr" aria-live="polite"></p>
+      <div class="tools"><button id="xl">Copy LaTeX</button><button id="xa">Copy Asymptote</button><button id="cp">Copy link</button></div>
+      <p class="tip">Drag the white dots (pull the strip dot left past the square to subtract), tap a piece for its area, or use ← →.</p>
     </div>
+  </div>
+
+  <!-- ============ 3D ============ -->
+  <div class="layout" id="v3" hidden>
+    <div class="stage">
+      <div class="canvas cv"><canvas id="cv" aria-label="Rotatable 3D cube built from pieces. Drag to rotate."></canvas></div>
+      <div class="lg" id="lg"></div>
+      <p class="cap" id="cap3" aria-live="polite"></p>
+    </div>
+    <div class="controls">
+      <div class="row"><div class="hd"><span>Cube side (x)</span><b id="vx3"></b></div><input type="range" id="sx3" min="2" max="6" step="1" value="4" aria-label="x"></div>
+      <div class="row"><div class="hd"><span>Added layer (y)</span><b id="vy3"></b></div><input type="range" id="sy3" min="1" max="3" step="1" value="2" aria-label="y"></div>
+      <div class="row">
+        <div class="hd" style="color:#60a5fa"><span id="vs3"></span></div>
+        <div class="stepper"><button id="back3" aria-label="Previous step">◀</button><div class="dots" id="dots3"></div><button id="next3" aria-label="Next step">▶</button></div>
+        <div class="tools"><button id="play3" class="primary">Play</button><label><input type="checkbox" id="auto3" checked> Auto-rotate</label></div>
+      </div>
+      <div class="eq"><div id="eq3"></div><div id="num3" class="tip"></div></div>
+      <div class="tools"><button id="xl3">Copy LaTeX</button><button id="xa3">Copy Asymptote</button></div>
+      <p class="tip">Drag the cube to rotate it. Step through to see each piece snap into place.</p>
+    </div>
+  </div>
+
+  <div id="xp" hidden>
+    <div class="hd" style="color:#60a5fa"><span id="xh">Export</span></div>
+    <textarea id="xt" readonly aria-label="Exported text"></textarea>
+    <div class="tools"><button id="xc" class="primary">Copy</button><button id="xx">Close</button><span class="tip" id="xm"></span></div>
   </div>
 </div>
 <script>
-const U=24,OX=50,OY=50,GAP=12,NS='http://www.w3.org/2000/svg',$=id=>document.getElementById(id);
-const S={x:6,b:8,c:5,step:0,ch:false,solved:false,streak:0,best:0};
-const namesP=["The equation","The split","The move","The missing piece","The constant"],namesN=["The equation","The split","The move","The give-back","The constant"];
-const sv=v=>v<0?"−"+(-v):""+v;
-const capsP=["A square of side x, plus a strip of area bx. Can we turn this into one bigger square?",
-"Slice the strip down the middle: two equal strips, each b/2 wide.",
-"Slide one strip under the square. A corner is missing!",
-"Fill the corner with (b/2)². Now x² + bx + (b/2)² is a perfect square of side x + b/2. To stay fair we also subtract (b/2)²."];
-const capsN=["Start with a square of side x, then take away a strip of area bx. What's left is a rectangle.",
-"Cut the strip down the middle into two strips, each b/2 wide.",
-"Lay one strip along the right edge and the other along the bottom. They overlap in a corner!",
-"The corner was taken away twice, so give it back: add (b/2)². Now it is a perfect square of side x − b/2. To stay fair we subtract (b/2)² again."];
+const $=id=>document.getElementById(id),NS='http://www.w3.org/2000/svg';
 const clamp=(v,a,z)=>Math.max(a,Math.min(z,v));
-const hmaxN=()=>Math.floor((S.x-2)/2);
-const fit=()=>{if(S.b<0&&-S.b/2>hmaxN())S.b=-2*hmaxN()};
 const el=(n,a)=>{const e=document.createElementNS(NS,n);for(const k in a)e.setAttribute(k,a[k]);return e};
-const svg=$('viz'),layer=$('layer'),P={};
-const frm=el('rect',{fill:'none',rx:4,'stroke-width':1.5,'stroke-dasharray':'6 5','pointer-events':'none'});frm.style.stroke='var(--mute)';layer.append(frm);
-function mk(id,color,cls){
-  const g=el('g',{class:'piece '+(cls||'')+(id[0]=='r'&&id.length==2?' strip':'')}),r=el('rect',{fill:color,rx:4,class:'shape'}),tx=el('text',{class:'label'});
+const reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
+/* ---------- fractions ---------- */
+const gcd=(a,b)=>b?gcd(b,a%b):Math.abs(a);
+const fr=(n,d=1)=>{if(d<0){n=-n;d=-d}const g=gcd(n,d)||1;return[n/g,d/g]};
+const fadd=(p,q)=>fr(p[0]*q[1]+q[0]*p[1],p[1]*q[1]),fsub=(p,q)=>fadd(p,[-q[0],q[1]]),fmul=(p,q)=>fr(p[0]*q[0],p[1]*q[1]),fdiv=(p,q)=>fr(p[0]*q[1],p[1]*q[0]),fv=p=>p[0]/p[1];
+const fa=p=>{const n=Math.abs(p[0]),d=p[1];return d==1?''+n:[2,4,5,8,10,20,25].includes(d)?''+(+(n/d).toFixed(4)):n+'/'+d};
+const fsn=p=>(p[0]<0?'−':'')+fa(p);
+const tx=p=>{const n=Math.abs(p[0]);return(p[0]<0?'-':'')+(p[1]==1?n:`\\frac{${n}}{${p[1]}}`)};
+const sv=v=>v<0?'−'+(-v):''+v;
+/* ---------- state ---------- */
+const OX=50,OY=44,GAP=12;
+let U=24,slot=0,BOT=300,view=490,FB=15;
+const S={x:6,a:1,b:8,c:5,step:0,ch:false,solved:false,streak:0,best:0,lvl:1,mode:'2d'};
+const smin=()=>S.a>1?-1:0;
+function fit(){S.a=clamp(S.a,1,3);S.x=clamp(S.x,4,10);if(S.b<0){const mx=Math.min(12,S.a*(S.x-1));if(-S.b>mx)S.b=-mx}S.b=clamp(S.b,-12,12)||1;S.step=clamp(S.step,smin(),5)}
+function D(){const {x,a,b,c}=S,neg=b<0,m=Math.abs(b),hp=fr(m,2*a),mp=fr(m,a),h2=fmul(hp,hp),k=fmul(fr(a),h2),r=fsub(fr(c),k),d=fsub(h2,fdiv(fr(c),fr(a))),vx=neg?hp:fr(-hp[0],hp[1]);
+  return{x,a,b,c,neg,m,hp,mp,h2,k,r,d,vx,sg:neg?'−':'+',h:fv(hp)}}
+function lay(){const {x,a,b}=S,m=Math.abs(b),neg=b<0,su=x+(neg?0:m/a);
+  let u=Math.min(24,(490-(a-1)*26-GAP)/(a*su));
+  if(a>1)u=Math.min(u,(490-(a-1)*26)/((a-1)*su+x+m));
+  U=Math.max(u,6);slot=Math.ceil(su+(GAP+14)/U)*U;BOT=OY+(x+(neg?0:m/(2*a)))*U;view=Math.max(330,Math.min(520,BOT+66));
+  svg.setAttribute('viewBox',`0 4 600 ${view}`);$('gpath').setAttribute('d',`M${U} 0H0V${U}`);
+  const pt=$('grid');pt.setAttribute('width',U);pt.setAttribute('height',U)}
+/* ---------- svg pieces ---------- */
+const svg=$('viz'),layer=$('layer'),P={},BASES=['main','r1','r2','ghost','corner'],KEYS=[],frs=[],blks=[];
+for(let i=0;i<3;i++){const f=el('rect',{fill:'none',rx:4,'stroke-width':1.5,'stroke-dasharray':'6 5','pointer-events':'none'});f.style.stroke='var(--mute)';layer.append(f);frs.push(f)}
+function mk(k,color,cls){
+  const g=el('g',{class:'piece '+cls}),r=el('rect',{fill:color,rx:4,class:'shape'}),t=el('text',{class:'label'});
   const gr=color==='none'?null:el('rect',{fill:'url(#grid)',rx:4,class:'gridov'});
-  g.append(r);if(gr)g.append(gr);$('tl').append(tx);layer.append(g);
-  P[id]={g,r,gr,tx,cur:null};
-  g.addEventListener('pointerenter',()=>info(id));g.addEventListener('pointerdown',()=>info(id));
-  g.addEventListener('pointerleave',()=>info(null));
+  g.append(r);if(gr)g.append(gr);$('tl').append(t);layer.append(g);
+  P[k]={g,r,gr,tx:t,cur:null};
+  g.addEventListener('pointerenter',()=>info(k));g.addEventListener('pointerdown',()=>info(k));g.addEventListener('pointerleave',()=>info(null));
 }
-mk('main','#3b82f6');mk('r1','#10b981');mk('r2','#10b981');mk('ghost','none','ghost');mk('corner','#f97316');
-const blk=el('rect',{fill:'none',rx:4,'stroke-width':2,'pointer-events':'none'});layer.append(blk);
+const COL={main:'#3b82f6',r1:'#10b981',r2:'#10b981',ghost:'none',corner:'#f97316'};
+for(let i=0;i<3;i++)for(const b of BASES){const k=i?b+'@'+i:b;KEYS.push(k);mk(k,COL[b],(b=='ghost'?'ghost':'')+(b[0]=='r'?' strip':''))}
+for(let i=0;i<4;i++){const b=el('rect',{fill:'none',rx:4,'stroke-width':2,'pointer-events':'none'});layer.append(b);blks.push(b)}
 
 function targets(){
-  const {x,b,step}=S,m=Math.abs(b),h=m/2,px=x*U,ph=h*U;
-  if(b<0){
-    const rem=(x-h)*U,mw=(x-m)*U,s=step,o=s>=3?.25:1;
-    return {
-      main:s<2?{x:OX,y:OY,w:mw,h:px,o:1}:{x:OX,y:OY,w:rem,h:rem,o:1},
-      r1:{x:OX+(s<2?mw:rem),y:OY,w:ph,h:px,o},
-      r2:s==0?{x:OX+mw+ph,y:OY,w:ph,h:px,o}:s==1?{x:OX+mw+ph+GAP,y:OY,w:ph,h:px,o}:{x:OX,y:OY+rem,w:px,h:ph,o},
-      ghost:{x:OX+rem,y:OY+rem,w:ph,h:ph,o:0},corner:{x:OX+rem,y:OY+rem,w:ph,h:ph,o:s>=2?.9:0}
-    };
-  }
-  const cr={x:OX+px,y:OY+px,w:ph,h:ph};
-  return {
-    main:{x:OX,y:OY,w:px,h:px,o:1},
-    r1:{x:OX+px,y:OY,w:ph,h:px,o:1},
-    r2:step==0?{x:OX+px+ph,y:OY,w:ph,h:px,o:1}:step==1?{x:OX+px+ph+GAP,y:OY,w:ph,h:px,o:1}:{x:OX,y:OY+px,w:px,h:ph,o:1},
-    ghost:{...cr,o:step==2?1:0},corner:{...cr,o:step>=3?1:0}
-  };
-}
-let base=15;
+  const {x,a,b,step:s}=S,m=Math.abs(b),neg=b<0,hp=m/(2*a),px=x*U,ph=hp*U,mw=(x-2*hp)*U,rem=(x-hp)*U,bx0=OX+(a-1)*slot+px+6,T={};
+  for(let i=0;i<3;i++){
+    const on=i<a?1:0,ox=OX+i*slot,sf=i?'@'+i:'',cr={x:ox+(neg?rem:px),y:OY+(neg?rem:px),w:ph,h:ph};
+    let M,R1,R2,G,C;
+    if(s==-1){M={x:ox,y:OY,w:px,h:px,o:on};R1={x:bx0+2*i*ph,y:OY,w:ph,h:px,o:on};R2={x:bx0+(2*i+1)*ph,y:OY,w:ph,h:px,o:on};G={...cr,o:0};C={...cr,o:0}}
+    else if(!neg){
+      M={x:ox,y:OY,w:px,h:px,o:on};R1={x:ox+px,y:OY,w:ph,h:px,o:on};
+      R2=s==0?{x:ox+px+ph,y:OY,w:ph,h:px,o:on}:s==1?{x:ox+px+ph+GAP,y:OY,w:ph,h:px,o:on}:{x:ox,y:OY+px,w:px,h:ph,o:on};
+      G={...cr,o:s==2?on:0};C={...cr,o:s>=3?on:0}}
+    else{
+      const o=s>=3?.25*on:on;
+      M=s<2?{x:ox,y:OY,w:mw,h:px,o:on}:{x:ox,y:OY,w:rem,h:rem,o:on};
+      R1={x:ox+(s<2?mw:rem),y:OY,w:ph,h:px,o};
+      R2=s==0?{x:ox+mw+ph,y:OY,w:ph,h:px,o}:s==1?{x:ox+mw+ph+GAP,y:OY,w:ph,h:px,o}:{x:ox,y:OY+rem,w:px,h:ph,o};
+      G={...cr,o:0};C={...cr,o:s>=2?.9*on:0}}
+    T['main'+sf]=M;T['r1'+sf]=R1;T['r2'+sf]=R2;T['ghost'+sf]=G;T['corner'+sf]=C}
+  return T}
 function draw(k){
-  const p=P[k],c=p.cur,s=S.step;
-  for(const r of [p.r,p.gr]) if(r){r.setAttribute('x',c.x);r.setAttribute('y',c.y);r.setAttribute('width',Math.max(c.w,0));r.setAttribute('height',Math.max(c.h,0))}
-  p.g.style.opacity=c.o;p.tx.style.opacity=c.o*((k=='r2'&&s==0)?0:1);p.g.style.pointerEvents=c.o>.5?'auto':'none';
-  const n=Math.max(p.tx.textContent.length,1)*.62,
-    rot=(k=='r1'&&s>0)||(k=='r2'&&s==1),comb=k=='r1'&&s==0,
-    L=comb?c.w*2-8:rot?c.h-8:c.w-8,T=comb?c.h-8:rot?c.w-8:c.h-8,
-    f=clamp(Math.min(base,L/n,T/1.1),6,base),sq=(k=='corner'||k=='ghost')?3:0,
-    x=(comb?c.x+c.w:c.x+c.w/2)+sq,y=c.y+c.h/2+sq;
-  p.tx.style.fontSize=f+'px';p.tx.setAttribute('x',x);p.tx.setAttribute('y',y);
-  p.tx.setAttribute('transform',rot?`rotate(-90 ${x} ${y})`:'');
-}
+  const [base,ii]=k.split('@'),i=+(ii||0),p=P[k],c=p.cur,s=S.step,m=Math.abs(S.b);
+  for(const r of [p.r,p.gr])if(r){r.setAttribute('x',c.x);r.setAttribute('y',c.y);r.setAttribute('width',Math.max(c.w,0));r.setAttribute('height',Math.max(c.h,0))}
+  p.g.style.opacity=c.o;p.g.style.pointerEvents=c.o>.5?'auto':'none';
+  const hide=(base=='r2'&&s<=0)||(base=='r1'&&s==-1&&i>0);
+  const n=Math.max(p.tx.textContent.length,1)*.62,rot=(base=='r1'&&s>0)||(base=='r2'&&s==1),comb=base=='r1'&&s==0,big=base=='r1'&&s==-1;
+  const L=comb?c.w*2-8:big?m*U-8:rot?c.h-8:c.w-8,Tt=(comb||big)?c.h-8:rot?c.w-8:c.h-8;
+  const f0=Math.min(FB,L/n,Tt/1.1),f=Math.max(f0,7),sq=(base=='corner'||base=='ghost')?3:0;
+  const x=(comb?c.x+c.w:big?c.x+m*U/2:c.x+c.w/2)+sq,y=c.y+c.h/2+sq;
+  p.tx.style.opacity=(hide||f0<6.8)?0:c.o;p.tx.style.fontSize=f+'px';p.tx.setAttribute('x',x);p.tx.setAttribute('y',y);
+  p.tx.setAttribute('transform',rot?`rotate(-90 ${x} ${y})`:'')}
 function place(){
-  const {x,b,step:s}=S,neg=b<0,m=Math.abs(b),h=m/2,px=x*U,mn=P.main.cur,r1=P.r1.cur,r2=P.r2.cur,pos=(ids,X,Y)=>ids.forEach(i=>{$(i).setAttribute('cx',X);$(i).setAttribute('cy',Y)});
+  const g=D(),s=S.step,neg=g.neg,px=S.x*U,a=S.a,r1=P.r1.cur,r2=P.r2.cur,mn=P.main.cur;
+  const pos=(ids,X,Y)=>ids.forEach(i=>{$(i).setAttribute('cx',X);$(i).setAttribute('cy',Y)});
   pos(['hX','dX','rX'],OX+px,OY+px);
-  pos(['hB','dB','rB'],neg?OX+(x-m)*U:r1.x+r1.w,OY);
-  let tx,ly;
-  if(neg){const w=s>=3?(x-h)*U:px;tx=OX+w/2;ly=OY+w/2}
-  else{const right=s==0?r2.x+r2.w:r1.x+r1.w;tx=(mn.x+right)/2;ly=s>=3?(mn.y+P.corner.cur.y+P.corner.cur.h)/2:mn.y+mn.h/2}
-  frm.setAttribute('x',OX);frm.setAttribute('y',OY);frm.setAttribute('width',px);frm.setAttribute('height',px);frm.style.opacity=neg?1:0;
-  blk.setAttribute('x',r1.x);blk.setAttribute('y',r1.y);blk.setAttribute('width',Math.max(r2.x+r2.w-r1.x,0));blk.setAttribute('height',r1.h);blk.style.opacity=s==0?1:0;blk.style.stroke=neg?'#ef4444':'#18181b';blk.style.strokeDasharray=neg?'6 4':'';
-  $('dt').setAttribute('x',tx);$('dl').setAttribute('x',OX-18);$('dl').setAttribute('y',ly);$('dl').setAttribute('transform',`rotate(-90 ${OX-18} ${ly})`);
-  $('dt').style.fontSize=$('dl').style.fontSize=Math.min(base,17)+'px';
-}
+  pos(['hB','dB','rB'],neg?OX+(S.x-2*g.h)*U:r1.x+r1.w,OY);
+  for(const i of ['hB','dB','rB'])$(i).style.display=s==-1?'none':'';
+  let tx0,ly;
+  if(neg||s==-1){const w=(neg&&s>=3)?(S.x-g.h)*U:px;tx0=OX+w/2;ly=OY+w/2}
+  else{const right=s==0?r2.x+r2.w:r1.x+r1.w;tx0=(mn.x+right)/2;ly=s>=3?(mn.y+P.corner.cur.y+P.corner.cur.h)/2:mn.y+mn.h/2}
+  $('dt').setAttribute('x',tx0);$('dl').setAttribute('x',OX-18);$('dl').setAttribute('y',ly);$('dl').setAttribute('transform',`rotate(-90 ${OX-18} ${ly})`);
+  $('dt').style.fontSize=$('dl').style.fontSize=Math.min(FB,17)+'px';
+  frs.forEach((f,i)=>{f.setAttribute('x',OX+i*slot);f.setAttribute('y',OY);f.setAttribute('width',px);f.setAttribute('height',px);f.style.opacity=neg&&i<a?1:0});
+  const col=neg?'#ef4444':'#18181b',dash=neg?'6 4':'';
+  for(let i=0;i<3;i++){const q=P[i?'r1@'+i:'r1'].cur,w=P[i?'r2@'+i:'r2'].cur,b=blks[i];
+    b.setAttribute('x',q.x);b.setAttribute('y',q.y);b.setAttribute('width',Math.max(w.x+w.w-q.x,0));b.setAttribute('height',q.h);b.style.opacity=(s==0&&i<a)?1:0;b.style.stroke=col;b.style.strokeDasharray=dash}
+  const b=blks[3],q=P.r1.cur,w=P['r2'+(a>1?'@'+(a-1):'')].cur;
+  b.setAttribute('x',q.x);b.setAttribute('y',q.y);b.setAttribute('width',Math.max(w.x+w.w-q.x,0));b.setAttribute('height',q.h);b.style.opacity=s==-1?1:0;b.style.stroke=col;b.style.strokeDasharray=dash}
 let raf=0;
-function tick(){
-  let moving=false;const T=targets();
-  for(const k in P){
-    const c=P[k].cur;
-    for(const a of ['x','y','w','h','o']){const d=T[k][a]-c[a];if(Math.abs(d)>.05){c[a]+=d*.18;moving=true}else c[a]=T[k][a]}
-    draw(k);
-  }
-  place();raf=moving?requestAnimationFrame(tick):0;
-}
+function tick(){let moving=false;const T=targets();
+  for(const k of KEYS){const c=P[k].cur;
+    for(const a of['x','y','w','h','o']){const d=T[k][a]-c[a];if(Math.abs(d)>.05){c[a]+=d*.18;moving=true}else c[a]=T[k][a]}
+    draw(k)}
+  place();raf=moving?requestAnimationFrame(tick):0}
 const go=()=>{if(!raf)raf=requestAnimationFrame(tick)};
 
-function info(id){
-  const {x,b,step}=S,m=Math.abs(b),h=m/2,neg=b<0,r=neg?x-h:x+h;
-  const t=neg?{
-    main:step<2?`x(x − b) = ${x}×${x-m} = ${x*(x-m)} tiles. This is x² − bx.`:`(x − b/2)² = ${r}×${r} = ${r*r} tiles`,
-    r1:`(b/2)·x = ${h}×${x} = ${h*x} tiles, taken away`,r2:`(b/2)·x = ${h}×${x} = ${h*x} tiles, taken away`,
-    ghost:'',corner:`(b/2)² = ${h}×${h} = ${h*h} tiles. Taken away twice, so we give it back.`}:{
-    main:`x² = ${x}×${x} = ${x*x} tiles`,
-    r1:`(b/2)·x = ${h}×${x} = ${h*x} tiles`,r2:`(b/2)·x = ${h}×${x} = ${h*x} tiles`,
-    ghost:`The gap is the same width and height as a strip: b/2.`,
-    corner:`(b/2)² = ${h}×${h} = ${h*h} tiles. This is the piece we added.`};
-  $('info').textContent=id?t[id]:'Hover or tap a piece to see its area.';
-}
+function info(k){
+  if(!k){$('info').textContent='Hover or tap a piece to see its area.';return}
+  const base=k.split('@')[0],g=D(),s=S.step,x=S.x,hv=g.h,f=v=>+v.toFixed(2),w=g.neg?x-hv:x+hv;
+  const t={main:g.neg&&s>=0?(s<2?`x(x − ${fa(g.mp)}) = ${f(x*(x-2*hv))} tiles`:`(x − ${fa(g.hp)})² = ${f(w*w)} tiles`):`x² = ${x*x} tiles`,
+    r1:`${fa(g.hp)} × x = ${f(hv*x)} tiles${g.neg?', taken away':''}`,r2:`${fa(g.hp)} × x = ${f(hv*x)} tiles${g.neg?', taken away':''}`,
+    ghost:'The gap is as wide as a strip.',corner:`${fa(g.hp)}² = ${f(hv*hv)} tiles. ${g.neg?'Taken away twice, so give it back.':'The piece we add.'}`};
+  $('info').textContent=t[base]}
 function labels(){
-  const {x,b,step}=S,m=Math.abs(b),h=m/2,neg=b<0;
-  if(neg){
-    P.main.tx.textContent=step<2?`x(x−${m})`:`(x−${h})²`;
-    P.r1.tx.textContent=step==0?`−${m}x`:`${h}x`;
-    $('dt').textContent=$('dl').textContent=step>=3?`x − ${h}`:'x';
-    $('dt').style.opacity=$('dl').style.opacity=1;
-  }else{
-    P.main.tx.textContent='x²';P.r1.tx.textContent=step==0?`${b}x`:`${h}x`;
-    $('dt').textContent=step==0?`x + ${b}`:`x + ${h}`;
-    $('dl').textContent=step==0?'x':`x + ${h}`;
-    const v=(step==0||step>=3)?1:0;$('dt').style.opacity=v;$('dl').style.opacity=v;
-  }
-  P.r2.tx.textContent=`${h}x`;
-  P.ghost.tx.textContent='?';P.corner.tx.textContent=`${h}²`;
-  for(const k of ['r1','r2']){const q=P[k];q.r.setAttribute('fill',neg?'rgba(239,68,68,.32)':'#10b981');q.r.style.stroke=neg?'#ef4444':'';q.r.style.strokeDasharray=neg?'6 4':'';q.tx.style.fill=neg?'var(--text)':''}
-  P.corner.r.setAttribute('fill',neg?'rgba(249,115,22,.85)':'#f97316');
-}
+  const g=D(),s=S.step,neg=g.neg,m=g.m;
+  for(let i=0;i<3;i++){const sf=i?'@'+i:'';
+    P['main'+sf].tx.textContent=neg&&s>=0?(s<2?`x(x−${fa(g.mp)})`:`(x−${fa(g.hp)})²`):'x²';
+    P['r1'+sf].tx.textContent=s==-1?`${neg?'−':''}${m}x`:s==0?`${neg?'−':''}${fa(g.mp)}x`:`${fa(g.hp)}x`;
+    P['r2'+sf].tx.textContent=`${fa(g.hp)}x`;P['ghost'+sf].tx.textContent='?';P['corner'+sf].tx.textContent=`${fa(g.hp)}²`}
+  for(const k of KEYS){const b=k.split('@')[0];if(b=='r1'||b=='r2')P[k].tx.style.fill=neg?'var(--text)':''}
+  for(const k of KEYS){const q=P[k],b=k.split('@')[0];
+    if(b=='r1'||b=='r2'){q.r.setAttribute('fill',neg?'rgba(239,68,68,.32)':'#10b981');q.r.style.stroke=neg?'#ef4444':'';q.r.style.strokeDasharray=neg?'6 4':''}
+    if(b=='corner')q.r.setAttribute('fill',neg?'rgba(249,115,22,.85)':'#f97316')}
+  if(neg){$('dt').textContent=$('dl').textContent=s>=3?`x − ${fa(g.hp)}`:'x';$('dt').style.opacity=$('dl').style.opacity=1}
+  else{$('dt').textContent=s<=-1?'x':s==0?`x + ${fa(g.mp)}`:`x + ${fa(g.hp)}`;$('dl').textContent=s<=0?'x':`x + ${fa(g.hp)}`;
+    const v=(s<=0||s>=3)?1:0;$('dt').style.opacity=v;$('dl').style.opacity=v}}
 function eq(){
-  const {x,b,c,step}=S,neg=b<0,m=Math.abs(b),h=m/2,c1=neg?'r':'g',sg=neg?'−':'+',w=neg?x-h:x+h,r=c-h*h;
-  const lock=S.ch&&!S.solved,sp=t=>`<span class="${c1}">${t}</span>`,cs=c==0?'':` ${c<0?'−':'+'} <span class="y">${Math.abs(c)}</span>`;
-  const e=[
-    `x² ${sg} ${sp(m+'x')}${lock?' + <span class="o">?</span>':''}${cs}`,
-    `x² ${sg} ${sp(h+'x')} ${sg} ${sp(h+'x')}${cs}`,
-    `x² ${sg} 2(${sp(h+'x')})${cs}`,
-    `(x² ${sg} ${m}x <span class="o">+ ${h}²</span>) <span class="o">− ${h}²</span>${cs}`,
-    `(x ${sg} ${h})² ${r<0?'−':'+'} ${Math.abs(r)}`][step];
-  $('eq').innerHTML=e;
-  $('num').textContent=step==3?`${x*x} ${sg} ${m*x} + ${h*h} = ${w*w} = ${w}²`:step==4?`${c} − ${h*h} = ${r}`:'';
-}
-function bars(){
-  const {x,b,c,step}=S,h=Math.abs(b)/2,r=c-h*h,bottom=OY+(x+(b<0?0:h))*U,y1=bottom+14,y2=y1+28,s=Math.min(24,300/Math.max(Math.abs(c),Math.abs(r),1));
-  const one=(rc,tx,v,y,t)=>{const w=Math.abs(v)*s;rc.setAttribute('x',OX);rc.setAttribute('y',y);rc.setAttribute('width',w);
-    rc.style.fill=v<0?'rgba(239,68,68,.3)':'rgba(16,185,129,.5)';rc.style.stroke=v<0?'#ef4444':'#10b981';rc.style.strokeWidth=2;rc.style.strokeDasharray=v<0?'6 4':'';rc.style.opacity=v==0?0:1;
-    tx.setAttribute('x',OX+w+8);tx.setAttribute('y',y+9);tx.textContent=t};
-  one($('bc'),$('tc'),c,y1,`c = ${sv(c)}`);one($('br'),$('tr'),r,y2,r==0?`c − ${h*h} = 0 (perfect!)`:`c − ${h*h} = ${sv(r)}`);
-  $('bars').style.opacity=step==4?1:0;
-}
+  const g=D(),{a,c,m,hp,mp,h2,k,r,d,sg,neg}=g,s=S.step,cl=neg?'r':'g',sp=t=>`<span class="${cl}">${t}</span>`,A=a>1;
+  const cs=c==0?'':` ${c<0?'−':'+'} <span class="y">${Math.abs(c)}</span>`,lock=S.ch&&!S.solved,ao=A?a+'(':'',ac=A?')':'';
+  const E={'-1':`${A?a:''}x² ${sg} ${sp(m+'x')}${cs}`,
+    0:A?`${a}(x² ${sg} ${sp(fa(mp)+'x')})${cs}`:`x² ${sg} ${sp(m+'x')}${lock?' + <span class="o">?</span>':''}${cs}`,
+    1:`${ao}x² ${sg} ${sp(fa(hp)+'x')} ${sg} ${sp(fa(hp)+'x')}${ac}${cs}`,
+    2:`${ao}x² ${sg} 2(${sp(fa(hp)+'x')})${ac}${cs}`,
+    3:`${A?a:''}(x² ${sg} ${fa(mp)}x <span class="o">+ ${fa(h2)}</span>) <span class="o">− ${fa(k)}</span>${cs}`,
+    4:`${A?a:''}(x ${sg} ${fa(hp)})² ${r[0]<0?'−':'+'} ${fa(r)}`,
+    5:`(x ${sg} ${fa(hp)})² = <span class="o">${fsn(d)}</span>`};
+  $('eq').innerHTML=E[s];
+  const w=fadd(fr(S.x),neg?fr(-hp[0],hp[1]):hp);
+  $('num').textContent=s==3?(A?`${a} × ${fa(h2)} = ${fa(k)} added in total`:`${S.x*S.x} ${sg} ${m*S.x} + ${fa(h2)} = ${fa(fmul(w,w))} = ${fa(w)}²`):s==4?`${c} − ${fa(k)} = ${fsn(r)}`:s==5?solveTxt():''}
+function solveTxt(){const g=D(),{d,vx}=g;if(d[0]<0)return'A square is never negative, so there are no real solutions.';if(d[0]==0)return`x = ${fsn(vx)}`;
+  const sd=Math.sqrt(fv(d)),ex=Number.isInteger(Math.sqrt(d[0]))&&Number.isInteger(Math.sqrt(d[1])),v=fv(vx),q=n=>+n.toFixed(2);
+  return`x = ${fsn(vx)} ± √${fa(d)} ${ex?'=':'≈'} ${q(v-sd)} or ${q(v+sd)}`}
+function stageName(s){return s==-1?'The setup':s==0?(S.a>1?'Factor out a':'The equation'):s==1?'The split':s==2?'The move':s==3?(S.b<0?'The give-back':'The missing piece'):s==4?'The constant':'Solve for zero'}
 function capText(){
-  const {b,c,step}=S,m=Math.abs(b),h=m/2,neg=b<0,r=c-h*h,sg=neg?'−':'+';
-  if(step<4)return (neg?capsN:capsP)[step];
-  return `So x² ${sg} ${m}x ${c<0?'−':'+'} ${Math.abs(c)} = (x ${sg} ${h})² ${r<0?'−':'+'} ${Math.abs(r)}. Its lowest value is ${r}, reached when x = ${neg?h:-h}.`;
-}
+  const g=D(),{a,c,m,hp,r,sg,neg,d}=g,s=S.step,A=a>1,H=A?'b/2a':'b/2';
+  if(s==-1)return neg?`Start with ${a} squares of side x, then take away ONE strip of total area bx.`:`${a} squares of side x (total ${a}x²), plus one long strip of area bx. How do we turn this into perfect squares?`;
+  if(s==0)return A?`Factor out a: share the strip equally, one piece per square. Each is b/a wide, so this is a(x² ${sg} (b/a)x). That's why we factor a first!`:(neg?'Start with a square of side x, then take away a strip of area bx. What\'s left is a rectangle.':'A square of side x, plus a strip of area bx. Can we turn this into one bigger square?');
+  if(s==1)return neg?`Cut ${A?'each':'the'} strip in half: two strips, each ${H} wide.`:`Slice ${A?'each':'the'} strip down the middle: two equal strips, each ${H} wide.`;
+  if(s==2)return neg?`Lay one half-strip along the right edge and the other along the bottom${A?' of every square':''}. They overlap in a corner!`:`Slide one strip under ${A?'each':'the'} square. ${A?'Each has':'A corner is'} a missing corner!`;
+  if(s==3)return neg?`The corner was taken away twice, so give it back: add (${H})². ${A?'Each square is':'It is'} now a perfect square of side x − ${H}. To stay fair we subtract what we added, ${fa(g.k)}.`:`Fill ${A?'each corner':'the corner'} with (${H})². ${A?'Each square is':'It is'} now a perfect square of side x + ${H}. To stay fair we subtract what we added, ${fa(g.k)}.`;
+  if(s==4)return`So ${A?a:''}x² ${sg} ${m}x ${c<0?'−':'+'} ${Math.abs(c)} = ${A?a:''}(x ${sg} ${fa(hp)})² ${r[0]<0?'−':'+'} ${fa(r)}. Its lowest value is ${fsn(r)}, reached when x = ${fsn(g.vx)}.`;
+  return d[0]<0?`Set it to 0 and move the constant across: (x ${sg} ${fa(hp)})² = ${fsn(d)}. A square can't be negative, so the parabola never touches the x-axis.`:`Set it to 0, move the constant across and divide by a: (x ${sg} ${fa(hp)})² = ${fsn(d)}. Take the square root of both sides, then undo the shift.`}
+function bars(){
+  const g=D(),{c,r,k}=g,rv=fv(r),y1=BOT+12,y2=y1+28,s=Math.min(24,300/Math.max(Math.abs(c),Math.abs(rv),1));
+  const one=(rc,t,v,y,txt)=>{const w=Math.abs(v)*s;rc.setAttribute('x',OX);rc.setAttribute('y',y);rc.setAttribute('width',w);
+    rc.style.fill=v<0?'rgba(239,68,68,.3)':'rgba(16,185,129,.5)';rc.style.stroke=v<0?'#ef4444':'#10b981';rc.style.strokeWidth=2;rc.style.strokeDasharray=v<0?'6 4':'';rc.style.opacity=v==0?0:1;
+    t.setAttribute('x',OX+w+8);t.setAttribute('y',y+9);t.textContent=txt};
+  one($('bc'),$('tc'),c,y1,`c = ${sv(c)}`);one($('br'),$('tr'),rv,y2,rv==0?`c − ${fa(k)} = 0 (perfect!)`:`c − ${fa(k)} = ${fsn(r)}`);
+  $('bars').style.opacity=S.step>=4?1:0}
+const gr=$('gr');
+function graph(){
+  const g=D(),{a,r,vx}=g,rv=fv(r),v0=fv(vx),W=300,H=150,p=14,x0=v0-7,x1=v0+7,lo=Math.min(rv,0)-4,hi=Math.max(rv,0)+46;
+  const X=u=>p+(u-x0)/(x1-x0)*(W-2*p),Y=v=>H-p-(v-lo)/(hi-lo)*(H-2*p);
+  let d='';for(let i=0;i<=60;i++){const u=x0+(x1-x0)*i/60;d+=(i?'L':'M')+X(u).toFixed(1)+' '+Y(a*(u-v0)**2+rv).toFixed(1)}
+  let o=`<line x1="${p}" x2="${W-p}" y1="${Y(0)}" y2="${Y(0)}" stroke="var(--mute)"/>`;
+  if(x0<0&&x1>0)o+=`<line x1="${X(0)}" x2="${X(0)}" y1="${p}" y2="${H-p}" stroke="var(--mute)"/>`;
+  o+=`<path d="${d}" fill="none" stroke="#60a5fa" stroke-width="2.5"/>`;
+  const on=S.step>=4?1:.3;
+  o+=`<line x1="${X(v0)}" x2="${X(v0)}" y1="${Y(rv)}" y2="${Y(0)}" stroke="#f97316" stroke-dasharray="3 3" opacity="${on}"/><circle cx="${X(v0)}" cy="${Y(rv)}" r="5" fill="#f97316" opacity="${on}"/>`;
+  o+=`<text x="${clamp(X(v0),62,W-62)}" y="${rv<0?Y(rv)-9:Y(rv)+17}" text-anchor="middle" font-size="11" font-family="Space Mono,monospace" fill="var(--text)" opacity="${on}">vertex (${fsn(vx)}, ${fsn(r)})</text>`;
+  if(S.step==5&&g.d[0]>=0){const sd=Math.sqrt(fv(g.d));for(const u of g.d[0]==0?[v0]:[v0-sd,v0+sd])o+=`<circle cx="${X(u)}" cy="${Y(0)}" r="5" fill="#10b981" stroke="var(--text)" stroke-width="1.5"/>`}
+  gr.innerHTML=o}
+function srSay(){const g=D(),{a,r,sg,hp}=g,s=S.step;
+  $('sr').textContent=s==4?`${a>1?a+' times ':''}x ${g.neg?'minus':'plus'} ${fa(hp)}, quantity squared, ${r[0]<0?'minus':'plus'} ${fa(r)}`:s==5?capText()+' '+solveTxt():''}
+function eqSync(){const g=D();if(document.activeElement!==$('eqin'))$('eqin').value=`${S.a>1?S.a:''}x² ${g.sg} ${g.m==1?'':g.m}x ${S.c<0?'−':'+'} ${Math.abs(S.c)}`}
+function buildDots(){const n=6+(S.a>1?1:0),d=$('dots');if(d.children.length==n)return;d.innerHTML='';for(let i=0;i<n;i++){const b=document.createElement('button');b.textContent=i;b.onclick=()=>{stop();setStep(i+smin())};d.append(b)}}
 function sync(){
-  fit();
-  const {x,b,step}=S,neg=b<0,m=Math.abs(b);
-  $('sx').value=x;$('sb').max=neg?2*hmaxN():12;$('sb').value=m;$('vx').textContent=x;$('vb').textContent=(neg?'−':'+')+m;
+  fit();lay();buildDots();
+  const {x,a,b,c,step:s}=S,neg=b<0,m=Math.abs(b),mn=smin();
+  $('sx').value=x;$('sa').value=a;$('sb').max=neg?Math.min(12,a*(x-1)):12;$('sb').value=m;$('sc').value=c;
+  $('vx').textContent=x;$('va').textContent=a;$('vb').textContent=(neg?'−':'+')+m;$('vc').textContent=(c<0?'−':'+')+Math.abs(c);
   $('sp').classList.toggle('on',!neg);$('sm').classList.toggle('on',neg);
-  $('vs').textContent=`Step ${step}: ${(neg?namesN:namesP)[step]}`;
-  [...$('dots').children].forEach((d,i)=>{d.classList.toggle('on',i<=step);d.setAttribute('aria-current',i==step);d.title=(neg?namesN:namesP)[i]});
-  $('cap').textContent=capText();svg.classList.toggle('merge',step==0);$('sc').value=S.c;$('vc').textContent=(S.c<0?'−':'+')+Math.abs(S.c);bars();
-  labels();eq();info(null);
-}
+  $('vs').textContent=`Step ${s-mn}: ${stageName(s)}`;
+  [...$('dots').children].forEach((d,i)=>{d.classList.toggle('on',i+mn<=s);d.setAttribute('aria-current',i+mn==s);d.title=stageName(i+mn)});
+  $('cap').textContent=capText();svg.classList.toggle('merge',s<=0);
+  labels();eq();bars();graph();srSay();eqSync();saveHash();info(null)}
 const set=(k,v)=>{if(S[k]!==v){S[k]=v;sync();go()}};
-
-function burst(){
-  const T=targets().corner,cx=T.x+T.w/2,cy=T.y+T.h/2,cols=['#f97316','#3b82f6','#10b981','#fbbf24'];
-  for(let i=0;i<18;i++){
-    const a=i/18*6.283,d=50+Math.random()*60;
-    const c=el('circle',{cx,cy,r:4+Math.random()*3,fill:cols[i%4],class:'fx'});
-    c.style.setProperty('--dx',Math.cos(a)*d+'px');c.style.setProperty('--dy',Math.sin(a)*d+'px');
-    $('fxl').append(c);setTimeout(()=>c.remove(),1000);
-  }
-}
+function burst(){const T=targets().corner,cx=T.x+T.w/2,cy=T.y+T.h/2,cols=['#f97316','#3b82f6','#10b981','#fbbf24'];
+  for(let i=0;i<18;i++){const a=i/18*6.283,d=50+Math.random()*60,c=el('circle',{cx,cy,r:4+Math.random()*3,fill:cols[i%4],class:'fx'});
+    c.style.setProperty('--dx',Math.cos(a)*d+'px');c.style.setProperty('--dy',Math.sin(a)*d+'px');$('fxl').append(c);setTimeout(()=>c.remove(),1000)}}
 function setStep(n){
-  n=clamp(n,0,4);
-  if(n>=3&&S.ch&&!S.solved){$('msg').textContent='Solve the challenge first to reveal the last step.';return}
+  n=clamp(n,smin(),5);
+  if(n>=3&&S.ch&&!S.solved){$('msg').textContent='Solve the challenge first to reveal the last steps.';return}
   const was=S.step;S.step=n;sync();go();
-  if(n==3&&was!=3){P.corner.g.classList.remove('pop');void P.corner.g.getBoundingClientRect();P.corner.g.classList.add('pop');burst();navigator.vibrate&&navigator.vibrate(15)}
-}
-
-// Drag handles
+  if(n==3&&was!=3){P.corner.g.classList.remove('pop');void P.corner.g.getBoundingClientRect();P.corner.g.classList.add('pop');burst();navigator.vibrate&&navigator.vibrate(15)}}
+/* ---------- input ---------- */
 const pt=e=>new DOMPoint(e.clientX,e.clientY).matrixTransform(svg.getScreenCTM().inverse());
-function drag(h,fn){
-  h.addEventListener('pointerdown',e=>{h.setPointerCapture(e.pointerId);h.dataset.d=1;e.preventDefault()});
-  h.addEventListener('pointermove',e=>{if(h.dataset.d)fn(pt(e))});
-  const end=()=>{delete h.dataset.d};h.addEventListener('pointerup',end);h.addEventListener('pointercancel',end);
-}
+function drag(h,fn){h.addEventListener('pointerdown',e=>{h.setPointerCapture(e.pointerId);h.dataset.d=1;e.preventDefault()});
+  h.addEventListener('pointermove',e=>{if(h.dataset.d)fn(pt(e))});const end=()=>{delete h.dataset.d};h.addEventListener('pointerup',end);h.addEventListener('pointercancel',end)}
 drag($('hX'),p=>set('x',clamp(Math.round(((p.x-OX)+(p.y-OY))/2/U),4,10)));
-drag($('hB'),p=>{
-  const d=(p.x-OX-S.x*U)/U;
-  if(d>=.5)set('b',2*clamp(Math.round(d),1,6));
-  else if(d<=-1)set('b',-2*clamp(Math.round(-d/2),1,hmaxN()));
-});
-
-// Controls
-$('sx').oninput=e=>set('x',+e.target.value);
-$('sc').oninput=e=>set('c',+e.target.value);
+drag($('hB'),p=>{const a=S.a,d=(p.x-OX-S.x*U)/U;
+  if(d>=.5/a)set('b',clamp(Math.round(2*a*d),1,12));
+  else if(d<=-1/a)set('b',-clamp(Math.round(-a*d),1,Math.min(12,a*(S.x-1))))});
+function nudgeB(d){let m=Math.abs(S.b),neg=S.b<0;
+  if(!neg){m+=d;if(m<1){neg=true;m=1}}else{m-=d;if(m<1){neg=false;m=1}}
+  m=clamp(m,1,neg?Math.min(12,S.a*(S.x-1)):12);set('b',neg?-m:m)}
+const arrows={ArrowRight:1,ArrowUp:1,ArrowLeft:-1,ArrowDown:-1};
+$('hX').addEventListener('keydown',e=>{const d=arrows[e.key];if(d){e.preventDefault();set('x',clamp(S.x+d,4,10))}});
+$('hB').addEventListener('keydown',e=>{const d=arrows[e.key];if(d){e.preventDefault();nudgeB(d)}});
+$('sx').oninput=e=>set('x',+e.target.value);$('sa').oninput=e=>set('a',+e.target.value);$('sc').oninput=e=>set('c',+e.target.value);
 $('sb').oninput=e=>set('b',(S.b<0?-1:1)*(+e.target.value));
 const flip=neg=>{const m=Math.abs(S.b);if(neg!==(S.b<0)){S.b=neg?-m:m;sync();go()}};
 $('sp').onclick=()=>flip(false);$('sm').onclick=()=>flip(true);
 function shuffle(){
-  S.x=4+Math.floor(Math.random()*7);const neg=Math.random()<.5,hm=neg?hmaxN():6;
-  S.b=(neg?-2:2)*(1+Math.floor(Math.random()*hm));S.c=Math.floor(Math.random()*19)-9;
-}
+  S.x=4+Math.floor(Math.random()*7);
+  const L=S.ch?S.lvl:3,neg=L==1?false:L==2?true:Math.random()<.5,mx=neg?S.x-1:12;
+  const m=L<3?2*(1+Math.floor(Math.random()*Math.floor(Math.min(6,mx/2)))):1+Math.floor(Math.random()*mx);
+  S.b=neg?-m:m;S.c=Math.floor(Math.random()*19)-9;if(!S.ch)S.a=1+Math.floor(Math.random()*3);fit()}
 $('rnd').onclick=()=>{shuffle();sync();go()};
-for(let i=0;i<5;i++){const d=document.createElement('button');d.textContent=i;d.onclick=()=>{stop();setStep(i)};$('dots').append(d)}
-$('back').onclick=()=>{stop();setStep(S.step-1)};
-$('next').onclick=()=>{stop();setStep(S.step+1)};
+$('back').onclick=()=>{stop();setStep(S.step-1)};$('next').onclick=()=>{stop();setStep(S.step+1)};
 $('gridT').onchange=e=>svg.classList.toggle('grid',e.target.checked);
 let timer=0;
 function stop(){clearInterval(timer);timer=0;$('play').textContent='Play'}
-$('play').onclick=()=>{
-  if(timer){stop();return}
-  if(S.step==4)setStep(0);
-  $('play').textContent='Pause';
-  timer=setInterval(()=>{if(S.step>=4||(S.ch&&!S.solved&&S.step>=2)){stop();return}setStep(S.step+1)},1800);
-};
+$('play').onclick=()=>{if(timer){stop();return}if(S.step==5)setStep(smin());$('play').textContent='Pause';
+  timer=setInterval(()=>{if(S.step>=5||(S.ch&&!S.solved&&S.step>=2)){stop();return}setStep(S.step+1)},1800)};
 addEventListener('keydown',e=>{
-  if(e.target.tagName=='INPUT'&&e.target.type!='range')return;
-  if(e.key=='ArrowRight'){stop();setStep(S.step+1)}
-  if(e.key=='ArrowLeft'){stop();setStep(S.step-1)}
-});
-
-// Challenge mode
-function newProblem(){
-  shuffle();S.solved=false;S.step=0;
-  $('ans').value='';
-  $('msg').textContent=`What number completes x² ${S.b<0?'−':'+'} ${Math.abs(S.b)}x + ?  Use the steps if you need a hint.`;
-  $('chk').textContent='Check';sync();go();if(matchMedia('(pointer:fine)').matches)$('ans').focus();
-}
-function streakTxt(){$('streak').textContent=S.streak?`Streak: ${S.streak}${S.streak>=S.best&&S.streak>2?' 🔥 best!':''}`:(S.best?`Best streak: ${S.best}`:'')}
-$('chalB').onclick=()=>{
-  S.ch=!S.ch;stop();document.body.classList.toggle('ch',S.ch);svg.classList.toggle('nohandle',S.ch);
-  for(const i of ['sx','sb','sp','sm','rnd'])$(i).disabled=S.ch;
-  $('chalB').textContent=S.ch?'Exit challenge':'Challenge';
-  if(S.ch){S.streak=0;streakTxt();newProblem()}else{S.solved=true;sync()}
-};
+  if((e.target.tagName=='INPUT'&&e.target.type!='range')||e.target.tagName=='TEXTAREA'||(e.target.classList&&e.target.classList.contains('hit')))return;
+  const d=e.key=='ArrowRight'?1:e.key=='ArrowLeft'?-1:0;if(!d)return;
+  if(S.mode=='3d')step3(S3.step+d);else{stop();setStep(S.step+d)}});
+$('theme').onclick=()=>{const r=document.documentElement,dark=r.dataset.theme?r.dataset.theme=='dark':!matchMedia('(prefers-color-scheme:light)').matches;r.dataset.theme=dark?'light':'dark'};
+/* typed equation */
+function parseEq(str){
+  const t=str.toLowerCase().replace(/[\s*]/g,'').replace(/−/g,'-').replace(/²/g,'^2'),bad='Try the form 2x^2 + 6x - 4';
+  const m=t.match(/^(\d*)x\^2(?:([+-]\d*\.?\d*)x)?([+-]\d*\.?\d*)?$/);if(!m)return bad;
+  const a=m[1]===''?1:parseInt(m[1],10);let b=m[2]===undefined?0:m[2]=='+'?1:m[2]=='-'?-1:parseFloat(m[2]);
+  const c=m[3]===undefined?0:(m[3]=='+'||m[3]=='-')?NaN:Math.round(parseFloat(m[3]));b=Math.round(b);
+  if(isNaN(b)||isNaN(c))return bad;
+  if(a<1||a>3)return'a must be 1, 2 or 3 here.';
+  if(!b)return"It needs a bx term (b can't be 0).";
+  if(Math.abs(b)>12||Math.abs(c)>12)return'Keep b and c between −12 and 12.';
+  let x=S.x;if(b<0&&-b>a*(x-1)){x=Math.ceil(-b/a)+1;if(x>10)return'That b is too big for −bx with this a.'}
+  S.a=a;S.x=x;S.b=b;S.c=c;sync();go();return'Updated!'}
+const doEq=e=>{$('eqmsg').textContent=parseEq(e.target.value)};
+$('eqin').addEventListener('change',doEq);
+$('eqin').addEventListener('keydown',e=>{if(e.key=='Enter'){doEq(e);e.target.blur();eqSync()}});
+/* hash */
+function saveHash(){try{history.replaceState(null,'',`#x=${S.x}&a=${S.a}&b=${S.b}&c=${S.c}&s=${S.step}`)}catch(e){}}
+function loadHash(){try{const q=new URLSearchParams(location.hash.slice(1)),g=k=>q.has(k)?parseInt(q.get(k),10):NaN;
+  const x=g('x'),a=g('a'),b=g('b'),c=g('c'),st=g('s');
+  if(!isNaN(x))S.x=x;if(!isNaN(a))S.a=a;if(!isNaN(b)&&b!=0)S.b=b;if(!isNaN(c))S.c=clamp(c,-12,12);if(!isNaN(st))S.step=st}catch(e){}}
+/* ---------- challenge ---------- */
+const LV=['','Level 1: positive even b','Level 2: negative even b','Level 3: any b, fractions!'];
+function newProblem(){shuffle();S.a=1;fit();S.solved=false;S.step=0;$('ans').value='';
+  $('msg').textContent=`${LV[S.lvl]}. What number completes x² ${S.b<0?'−':'+'} ${Math.abs(S.b)}x + ?  Use the steps if you need a hint.`;
+  $('chk').textContent='Check';sync();go();if(matchMedia('(pointer:fine)').matches)$('ans').focus()}
+function streakTxt(){$('streak').textContent=LV[S.lvl]+(S.streak?` · Streak: ${S.streak}`:'')+(S.best?` · Best: ${S.best}`:'')}
+$('chalB').onclick=()=>{S.ch=!S.ch;stop();document.body.classList.toggle('ch',S.ch);svg.classList.toggle('nohandle',S.ch);
+  for(const i of['sx','sa','sb','sp','sm','rnd','eqin'])$(i).disabled=S.ch;$('chalB').textContent=S.ch?'Exit challenge':'Challenge';
+  if(S.ch){S.streak=0;S.lvl=1;streakTxt();newProblem()}else{S.solved=true;sync()}};
 function check(){
   if(S.solved){newProblem();return}
-  const m=Math.abs(S.b),h=m/2,v=parseFloat($('ans').value);
-  if(isNaN(v))return;
-  if(v===h*h){S.solved=true;S.streak++;S.best=Math.max(S.best,S.streak);streakTxt();$('chk').textContent='Next problem';
-    $('msg').textContent=`Yes! (${m}/2)² = ${h*h}. So it's a perfect square: (x ${S.b<0?'−':'+'} ${h})².`;setStep(3)}
-  else{S.streak=0;streakTxt();$('msg').textContent=`Not quite. Halve ${m}, then square the result. The sign doesn't change the answer!`}
-}
-$('chk').onclick=check;
-$('ans').addEventListener('keydown',e=>{if(e.key=='Enter')check()});
+  const g=D(),v=parseFloat($('ans').value);if(isNaN(v))return;
+  if(Math.abs(v-g.h*g.h)<1e-9){S.solved=true;S.streak++;S.best=Math.max(S.best,S.streak);let up=false;if(S.streak%3==0&&S.lvl<3){S.lvl++;up=true}streakTxt();$('chk').textContent='Next problem';
+    $('msg').textContent=`Yes! (${g.m}/2)² = ${fa(g.h2)}. So it's a perfect square: (x ${g.sg} ${fa(g.hp)})².${up?' Level up! '+LV[S.lvl]+'.':''}`;setStep(3)}
+  else{S.streak=0;streakTxt();$('msg').textContent=`Not quite. Halve ${g.m}, then square the result. The sign doesn't change the answer!${S.lvl==3?' Fractions are fine: 2.5² = 6.25.':''}`}}
+$('chk').onclick=check;$('ans').addEventListener('keydown',e=>{if(e.key=='Enter')check()});
+/* ---------- export ---------- */
+function showX(h,t){$('xh').textContent=h;$('xt').value=t;$('xm').textContent='';$('xp').hidden=false;$('xt').focus();$('xt').select();$('xp').scrollIntoView({block:'nearest',behavior:'smooth'})}
+$('xx').onclick=()=>{$('xp').hidden=true};
+$('xc').onclick=()=>{const t=$('xt').value;let ok=false;try{navigator.clipboard.writeText(t).then(()=>$('xm').textContent='Copied!',()=>{$('xt').select();$('xm').textContent='Select all and copy.'});ok=true}catch(e){}
+  if(!ok){$('xt').select();try{ok=document.execCommand('copy')}catch(e){}$('xm').textContent=ok?'Copied!':'Select all and copy.'}};
+$('cp').onclick=()=>{saveHash();showX('Link to this exact problem',location.href)};
+function latex2(){
+  const g=D(),{a,c,m,hp,mp,h2,k,r,d,vx,neg}=g,sg=neg?'-':'+',A=a>1,ax=A?a:'',cs=c==0?'':` ${c<0?'-':'+'} ${Math.abs(c)}`,L=[];
+  const wr=t=>A?`${a}\\left(${t}\\right)`:`\\left(${t}\\right)`,ab=p=>tx([Math.abs(p[0]),p[1]]);
+  L.push(`${ax}x^2 ${sg} ${m}x${cs} &= `+(A?`${a}\\left(x^2 ${sg} ${ab(mp)}x\\right)${cs}`:`x^2 ${sg} ${m}x${cs}`));
+  L.push(`&= ${wr(`x^2 ${sg} 2\\cdot ${ab(hp)}x + ${ab(h2)}`)} - ${tx(k)}${cs}`);
+  L.push(`&= ${ax}\\left(x ${sg} ${ab(hp)}\\right)^2 ${r[0]<0?'-':'+'} ${ab(r)}`);
+  let s=`\\begin{align*}\n${L.join(' \\\\\n')}\n\\end{align*}`;
+  s+=`\n\nSetting the expression equal to $0$:\n\\begin{align*}\n${ax}\\left(x ${sg} ${ab(hp)}\\right)^2 ${r[0]<0?'-':'+'} ${ab(r)} &= 0 \\\\\n\\left(x ${sg} ${ab(hp)}\\right)^2 &= ${tx(d)}`;
+  s+=d[0]<0?` \\\\\n\\text{no real solutions}\n\\end{align*}`:` \\\\\nx &= ${tx(vx)} \\pm \\sqrt{${tx(d)}}\n\\end{align*}`;return s}
+function latex3(){const X=S3.x,Y=S3.y;return`\\begin{align*}\n(x+y)^3 &= x^3 + 3x^2y + 3xy^2 + y^3 \\\\\n(${X}+${Y})^3 &= ${X}^3 + 3\\cdot${X}^2\\cdot${Y} + 3\\cdot${X}\\cdot${Y}^2 + ${Y}^3 \\\\\n${(X+Y)**3} &= ${X**3} + ${3*X*X*Y} + ${3*X*Y*Y} + ${Y**3}\n\\end{align*}`}
+function asy2(){
+  const T=targets(),n3=v=>+v.toFixed(3),L=['size(9cm);','// 1 unit = 1 tile; y axis points up',''],neg=S.b<0;
+  for(const k of KEYS){const t=T[k];if(t.o<.05||t.w<=0)continue;const b=k.split('@')[0];
+    const col=b=='main'?'rgb(0.23,0.51,0.96)':b=='corner'?'rgb(0.98,0.45,0.09)':b=='ghost'?'rgb(0.98,0.45,0.09)':neg?'rgb(0.94,0.27,0.27)':'rgb(0.06,0.73,0.51)';
+    const op=b=='ghost'?.15:(b[0]=='r'&&neg)?.35:Math.min(1,t.o)*(b=='corner'&&neg?.85:1);
+    const x1=n3((t.x-OX)/U),x2=n3((t.x+t.w-OX)/U),y1=n3(-(t.y+t.h-OY)/U),y2=n3(-(t.y-OY)/U);
+    L.push(`filldraw(box((${x1},${y1}),(${x2},${y2})), ${col}+opacity(${n3(op)}), black+linewidth(0.8));`);
+    const lt=P[k].tx;if(+lt.style.opacity>.05&&lt.textContent)L.push(`label("$${lt.textContent.replace(/²/g,'^2').replace(/−/g,'-')}$",(${n3((x1+x2)/2)},${n3((y1+y2)/2)}));`)}
+  return L.join('\n')}
+function asy3(){const X=S3.x,Y=S3.y,L=['import three;','size(9cm);','currentprojection=orthographic(4,3,2.5);',''],C=['rgb(0.23,0.51,0.96)','rgb(0.06,0.73,0.51)','rgb(0.96,0.62,0.04)','rgb(0.98,0.45,0.09)'];
+  for(const p of pieces3()){if(p.g>S3.step)continue;const b=p.b;L.push(`draw(shift((${b[0]},${b[1]},${b[2]}))*scale3(${b[3]-b[0]},${b[4]-b[1]},${b[5]-b[2]})*unitcube, ${C[p.g]}+opacity(0.7));`)}return L.join('\n')}
+$('xl').onclick=()=>showX('LaTeX (needs amsmath)',latex2());$('xa').onclick=()=>showX('Asymptote',asy2());
+$('xl3').onclick=()=>showX('LaTeX (needs amsmath)',latex3());$('xa3').onclick=()=>showX('Asymptote (3D)',asy3());
+
+/* ================= 3D cube ================= */
+const S3={x:4,y:2,step:0,yaw:.75,pitch:.5,prog:[1,0,0,0],drag:false};
+const cv=$('cv'),cx=cv.getContext('2d'),G3=[{c:'#3b82f6',n:'x³'},{c:'#10b981',n:'x²y ×3'},{c:'#f59e0b',n:'xy² ×3'},{c:'#f97316',n:'y³'}];
+function size3(){const r=cv.getBoundingClientRect(),d=devicePixelRatio||1;cv.width=Math.max(1,Math.round(r.width*d));cv.height=Math.max(1,Math.round(r.height*d))}
+new ResizeObserver(size3).observe(cv);
+function pieces3(){const X=S3.x,Y=S3.y,B=(g,b,d)=>({g,b,d});
+  return[B(0,[0,0,0,X,X,X],[0,0,0]),B(1,[X,0,0,X+Y,X,X],[1,0,0]),B(1,[0,X,0,X,X+Y,X],[0,1,0]),B(1,[0,0,X,X,X,X+Y],[0,0,1]),
+    B(2,[X,X,0,X+Y,X+Y,X],[1,1,0]),B(2,[0,X,X,X,X+Y,X+Y],[0,1,1]),B(2,[X,0,X,X+Y,X,X+Y],[1,0,1]),B(3,[X,X,X,X+Y,X+Y,X+Y],[1,1,1])]}
+const hex=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16));
+const caps3=['Start with a cube of side x. Its volume is x³.','Add three slabs, each x × x × y, one on each of three faces: 3x²y.','Add three rods, each x × y × y, along the three edges: 3xy².','One small cube y³ is still missing from the corner. Add it and the whole thing is a perfect cube of side x + y!'];
+function rot(p){const cy=Math.cos(S3.yaw),sy=Math.sin(S3.yaw),cp=Math.cos(S3.pitch),sp=Math.sin(S3.pitch);
+  const x1=p[0]*cy+p[2]*sy,z1=-p[0]*sy+p[2]*cy,y2=p[1]*cp-z1*sp,z2=p[1]*sp+z1*cp;return[x1,y2,z2]}
+function frame3(){
+  if(S.mode!='3d')return;requestAnimationFrame(frame3);
+  for(let g=0;g<4;g++){const t=S3.step>=g?1:0;S3.prog[g]+=(t-S3.prog[g])*(reduce?1:.12)}
+  if($('auto3').checked&&!S3.drag&&!reduce)S3.yaw+=.004;
+  const W=cv.width,H=cv.height;cx.clearRect(0,0,W,H);
+  const X=S3.x,Y=S3.y,c0=(X+Y)/2,sc=Math.min(W,H)/((X+Y)*2.7),faces=[];
+  for(const p of pieces3()){const pr=S3.prog[p.g];if(pr<.02)continue;const off=p.d.map(v=>v*(1-pr)*(X+Y)*.8),b=p.b,rgb=hex(G3[p.g].c);
+    for(let a=0;a<3;a++)for(let s=0;s<2;s++){
+      const nrm=[0,0,0];nrm[a]=s?1:-1;const rn=rot(nrm);if(rn[2]<=.001)continue;
+      const u=(a+1)%3,v=(a+2)%3,fx=s?b[a+3]:b[a],pts=[[b[u],b[v]],[b[u+3],b[v]],[b[u+3],b[v+3]],[b[u],b[v+3]]].map(q=>{const P3=[0,0,0];P3[a]=fx;P3[u]=q[0];P3[v]=q[1];return rot([P3[0]+off[0]-c0,P3[1]+off[1]-c0,P3[2]+off[2]-c0])});
+      const z=pts.reduce((m,q)=>m+q[2],0)/4,f=.55+.45*Math.max(0,(rn[0]*-.4+rn[1]*.8+rn[2]*.45)/1.0);
+      faces.push({pts,z,col:`rgba(${Math.round(rgb[0]*f)},${Math.round(rgb[1]*f)},${Math.round(rgb[2]*f)},${Math.min(1,.35+pr*.65)})`,hl:p.g==S3.step})}}
+  faces.sort((a,b)=>a.z-b.z);
+  for(const f of faces){cx.beginPath();f.pts.forEach((q,i)=>{const sx=W/2+q[0]*sc,sy=H/2-q[1]*sc;i?cx.lineTo(sx,sy):cx.moveTo(sx,sy)});cx.closePath();
+    cx.fillStyle=f.col;cx.fill();cx.strokeStyle=f.hl?'rgba(255,255,255,.9)':'rgba(0,0,0,.45)';cx.lineWidth=(f.hl?2:1.2)*(devicePixelRatio||1);cx.stroke()}}
+cv.addEventListener('pointerdown',e=>{cv.setPointerCapture(e.pointerId);S3.drag=true;S3.lx=e.clientX;S3.ly=e.clientY;cv.style.cursor='grabbing'});
+cv.addEventListener('pointermove',e=>{if(!S3.drag)return;S3.yaw+=(e.clientX-S3.lx)*.01;S3.pitch=clamp(S3.pitch+(e.clientY-S3.ly)*.01,-1.3,1.3);S3.lx=e.clientX;S3.ly=e.clientY});
+const endD=()=>{S3.drag=false;cv.style.cursor='grab'};cv.addEventListener('pointerup',endD);cv.addEventListener('pointercancel',endD);
+function sync3(){
+  const X=S3.x,Y=S3.y,s=S3.step,v=[X**3,3*X*X*Y,3*X*Y*Y,Y**3];
+  $('sx3').value=X;$('sy3').value=Y;$('vx3').textContent=X;$('vy3').textContent=Y;
+  $('vs3').textContent=`Step ${s}: ${['The cube','The slabs','The rods','The missing corner'][s]}`;
+  [...$('dots3').children].forEach((d,i)=>{d.classList.toggle('on',i<=s);d.setAttribute('aria-current',i==s)});
+  $('cap3').textContent=caps3[s];
+  const parts=['x³','3x²y','3xy²','y³'];
+  $('eq3').innerHTML=parts.slice(0,s+1).map((p,i)=>`<span style="color:${G3[i].c}">${i?'+ ':''}${p}</span>`).join(' ')+(s==3?' = (x + y)³':'');
+  const sum=v.slice(0,s+1).reduce((a,b)=>a+b,0);
+  $('num3').textContent=v.slice(0,s+1).join(' + ')+(s==3?` = ${sum} = ${X+Y}³`:` = ${sum}`);
+  $('lg').innerHTML=G3.map((g,i)=>`<span style="background:${g.c};opacity:${i<=s?1:.3}">${g.n}: ${v[i]/(i==1||i==2?3:1)}${i==1||i==2?' each':''}</span>`).join('')}
+function step3(n){S3.step=clamp(n,0,3);sync3()}
+for(let i=0;i<4;i++){const b=document.createElement('button');b.textContent=i;b.onclick=()=>{stop3();step3(i)};$('dots3').append(b)}
+$('back3').onclick=()=>{stop3();step3(S3.step-1)};$('next3').onclick=()=>{stop3();step3(S3.step+1)};
+$('sx3').oninput=e=>{S3.x=+e.target.value;sync3()};$('sy3').oninput=e=>{S3.y=+e.target.value;sync3()};
+let t3=0;function stop3(){clearInterval(t3);t3=0;$('play3').textContent='Play'}
+$('play3').onclick=()=>{if(t3){stop3();return}if(S3.step==3)step3(0);$('play3').textContent='Pause';t3=setInterval(()=>{if(S3.step>=3){stop3();return}step3(S3.step+1)},1900)};
+/* ---------- mode switch ---------- */
+function setMode(m){S.mode=m;$('v2').hidden=m!='2d';$('v3').hidden=m!='3d';$('m2').classList.toggle('on',m=='2d');$('m3').classList.toggle('on',m=='3d');
+  $('sub').textContent=m=='2d'?'Build perfect squares from ax² ± bx + c. Drag, play, test yourself.':'Watch x³ + 3x²y + 3xy² + y³ assemble into a perfect cube. Drag to rotate.';
+  $('xp').hidden=true;if(m=='3d'){stop();size3();sync3();requestAnimationFrame(frame3)}else{stop3();fitBase();go()}}
+$('m2').onclick=()=>setMode('2d');$('m3').onclick=()=>setMode('3d');
 
 // Init
-const T0=targets();for(const k in P)P[k].cur={...T0[k],o:0};
-const fitBase=()=>{const q=svg.getBoundingClientRect();if(!q.width)return;base=clamp(13/Math.min(q.width/600,q.height/490),15,24);go()};
+loadHash();fit();lay();
+const T0=targets();for(const k of KEYS)P[k].cur={...T0[k],o:0};
+function fitBase(){const q=svg.getBoundingClientRect();if(!q.width||!q.height)return;FB=clamp(13/Math.min(q.width/600,q.height/view),15,26);go()}
 new ResizeObserver(fitBase).observe(svg);
 fitBase();sync();go();
 </script>
 </body>
-        </html>
+</html>
